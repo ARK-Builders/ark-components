@@ -73,7 +73,7 @@ publishing {
     repositories {
         maven {
             name = "GithubPackages"
-            url = URI("https://maven.pkg.github.com/ARK-Builders/arklib-android")
+            url = URI("https://maven.pkg.github.com/ARK-Builders/ark-components-android")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
