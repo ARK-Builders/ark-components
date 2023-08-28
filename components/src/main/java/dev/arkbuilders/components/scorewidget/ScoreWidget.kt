@@ -9,7 +9,6 @@ class ScoreWidget(
     val controller: ScoreWidgetController,
     val lifecycleOwner: LifecycleOwner,
 ) {
-
     var binding: ScoreWidgetBinding? = null
 
     fun init(binding: ScoreWidgetBinding) {

@@ -51,6 +51,11 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("org.orbit-mvi:orbit-viewmodel:4.6.1")
     implementation("space.taran:arklib:0.2.6")
+    implementation("com.mikepenz:fastadapter:5.6.0")
+    implementation("com.mikepenz:fastadapter-extensions-binding:5.6.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation("com.github.skydoves:balloon:1.4.8")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="resources_tags_selector_hint">Label some resources with tags to enable tags selector</string>
+    <string name="resources_filter_hint">Filter</string>
+    <string name="invert">Invert</string>
+</resources>
