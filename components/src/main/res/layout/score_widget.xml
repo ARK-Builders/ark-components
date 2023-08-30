@@ -2,13 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:visibility="gone">
 
     <ImageView
         android:id="@+id/increaseScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_arrow_up" />
@@ -17,7 +17,6 @@
         android:id="@+id/starIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/increaseScore"
         app:srcCompat="@drawable/ic_star" />
@@ -27,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/starIcon"
         app:layout_constraintEnd_toEndOf="@+id/starIcon"
         app:layout_constraintStart_toStartOf="@+id/starIcon"
@@ -37,7 +35,6 @@
         android:id="@+id/decreaseScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/starIcon"
         app:srcCompat="@drawable/ic_arrow_down" />
