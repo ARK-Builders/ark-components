@@ -27,7 +27,7 @@ import dev.arkbuilders.components.utils.closeKeyboard
 import dev.arkbuilders.components.utils.placeCursorToEnd
 import dev.arkbuilders.components.utils.showKeyboard
 import org.orbitmvi.orbit.viewmodel.observe
-import space.taran.arklib.domain.meta.Kind
+import dev.arkbuilders.arklib.domain.meta.Kind
 
 class TagSelector(
     val ctx: Context,
