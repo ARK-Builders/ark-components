@@ -9,9 +9,9 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
-import space.taran.arklib.ResourceId
-import space.taran.arklib.domain.score.Score
-import space.taran.arklib.domain.score.ScoreStorage
+import dev.arkbuilders.arklib.ResourceId
+import dev.arkbuilders.arklib.user.score.Score
+import dev.arkbuilders.arklib.user.score.ScoreStorage
 
 data class ScoreWidgetState(
     val score: Score,
