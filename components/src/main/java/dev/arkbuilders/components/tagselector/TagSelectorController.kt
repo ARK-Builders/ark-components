@@ -13,12 +13,12 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import dev.arkbuilders.arklib.ResourceId
-import dev.arkbuilders.arklib.domain.index.ResourceIndex
-import dev.arkbuilders.arklib.domain.meta.Kind
-import dev.arkbuilders.arklib.domain.meta.MetadataProcessor
-import dev.arkbuilders.arklib.domain.stats.StatsEvent
-import dev.arkbuilders.arklib.domain.tags.Tag
-import dev.arkbuilders.arklib.domain.tags.TagStorage
+import dev.arkbuilders.arklib.data.index.ResourceIndex
+import dev.arkbuilders.arklib.data.meta.Kind
+import dev.arkbuilders.arklib.data.meta.MetadataProcessor
+import dev.arkbuilders.arklib.data.stats.StatsEvent
+import dev.arkbuilders.arklib.data.tags.Tag
+import dev.arkbuilders.arklib.data.tags.TagStorage
 
 sealed class TagItem {
     data class PlainTagItem(val tag: Tag) : TagItem()
