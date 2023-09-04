@@ -17,8 +17,8 @@ import dev.arkbuilders.arklib.data.index.ResourceIndex
 import dev.arkbuilders.arklib.data.meta.Kind
 import dev.arkbuilders.arklib.data.meta.MetadataProcessor
 import dev.arkbuilders.arklib.data.stats.StatsEvent
-import dev.arkbuilders.arklib.data.tags.Tag
-import dev.arkbuilders.arklib.data.tags.TagStorage
+import dev.arkbuilders.arklib.user.tags.Tag
+import dev.arkbuilders.arklib.user.tags.TagStorage
 
 sealed class TagItem {
     data class PlainTagItem(val tag: Tag) : TagItem()
