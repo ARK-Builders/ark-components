@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Ark Components</string>
+    <string name="file_picker_title">Pick favorite folder</string>
 </resources>
