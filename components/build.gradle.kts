@@ -50,12 +50,22 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("org.orbit-mvi:orbit-viewmodel:6.1.0")
-    implementation("dev.arkbuilders:arklib:0.3.2")
+    implementation("dev.arkbuilders:arklib:0.3.5")
     implementation("com.mikepenz:fastadapter:5.6.0")
     implementation("com.mikepenz:fastadapter-extensions-binding:5.6.0")
+    implementation("com.mikepenz:fastadapter-extensions-diff:5.6.0")
+
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.8")
+
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("com.github.skydoves:balloon:1.4.8")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    val coilVersion = "2.4.0"
+    implementation("io.coil-kt:coil:$coilVersion")
+    implementation("io.coil-kt:coil-gif:$coilVersion")
+    implementation("io.coil-kt:coil-svg:$coilVersion")
+    implementation("io.coil-kt:coil-video:$coilVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
