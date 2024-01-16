@@ -1,5 +1,6 @@
 package dev.arkbuilders.components.filepicker
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -38,6 +39,7 @@ import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.INTERNAL_STORAGE
 import org.orbitmvi.orbit.viewmodel.observe
 import dev.arkbuilders.components.R
+import dev.arkbuilders.components.databinding.ArkFilePickerDialogNewFolderBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerHostFragmentBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFileBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFilesRootsPageBinding
@@ -47,6 +49,7 @@ import dev.arkbuilders.components.utils.dpToPx
 import dev.arkbuilders.components.utils.formatSize
 import dev.arkbuilders.components.utils.iconForExtension
 import dev.arkbuilders.components.utils.setDragSensitivity
+import java.io.File
 import java.lang.Exception
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -60,20 +63,20 @@ import kotlin.io.path.name
 open class ArkFilePickerFragment :
     DialogFragment(R.layout.ark_file_picker_host_fragment) {
 
-    var titleStringId by args<Int>()
-    var pickButtonStringId by args<Int>()
-    var cancelButtonStringId by args<Int>()
-    var internalStorageStringId by args<Int>()
-    var itemsPluralId by args<Int>()
-    var themeId by args<Int>()
-    var accessDeniedStringId by args<Int>()
-    var mode by args<Int>()
-    var initialPath by args<String?>()
-    var showRoots by args<Boolean>()
-    var pathPickedRequestKey by args<String>()
-    var rootsFirstPage by args<Boolean>()
+    private var titleStringId by args<Int>()
+    private var pickButtonStringId by args<Int>()
+    private var cancelButtonStringId by args<Int>()
+    private var internalStorageStringId by args<Int>()
+    private var itemsPluralId by args<Int>()
+    private var themeId by args<Int>()
+    private var accessDeniedStringId by args<Int>()
+    private var mode by args<Int>()
+    private var initialPath by args<String?>()
+    private var showRoots by args<Boolean>()
+    private var pathPickedRequestKey by args<String>()
+    private var rootsFirstPage by args<Boolean>()
 
-    var currentFolder: Path? = null
+    private var currentFolder: Path? = null
     val binding by viewBinding(ArkFilePickerHostFragmentBinding::bind)
     private val viewModel by viewModels<ArkFilePickerViewModel> {
         ArkFilePickerViewModelFactory(
@@ -148,6 +151,41 @@ open class ArkFilePickerFragment :
         } else {
             tabs.isVisible = false
         }
+
+        if (mode == ArkFilePickerMode.FOLDER.ordinal) {
+            binding.ivNewFolder.visibility = View.VISIBLE
+            binding.ivNewFolder.setOnClickListener {
+                showCreateFolderDialog()
+            }
+        } else {
+            binding.ivNewFolder.visibility = View.GONE
+        }
+    }
+
+    private fun showCreateFolderDialog() {
+        val builder = AlertDialog.Builder(activity, android.R.style.ThemeOverlay_Material_Dialog_Alert)
+        builder.setTitle(R.string.ark_file_picker_new_folder)
+        val binding = ArkFilePickerDialogNewFolderBinding.inflate(layoutInflater)
+        builder.setView(binding.root)
+        builder.setPositiveButton(android.R.string.ok, null)
+
+        builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
+        val dialog = builder.create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val newFolder = File(currentFolder.toString(), binding.editTextFolderName.text.toString().trim())
+            if (newFolder.exists()) {
+                binding.inputLayoutFolderName.error = getString(R.string.ark_file_picker_folder_existing)
+                return@setOnClickListener
+            }
+
+            if (newFolder.mkdirs()) {
+                //Reload current files tree
+                currentFolder?.let { viewModel.onItemClick(it) }
+                dialog.dismiss()
+            }
+        }
+
     }
 
     private fun render(state: FilePickerState) = binding.apply {
