@@ -51,8 +51,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("org.orbit-mvi:orbit-viewmodel:6.1.0")
     implementation("dev.arkbuilders:arklib:0.3.5")
-    implementation("com.mikepenz:fastadapter:5.6.0")
-    implementation("com.mikepenz:fastadapter-extensions-binding:5.6.0")
+    implementation("com.mikepenz:fastadapter:5.7.0")
+    implementation("com.mikepenz:fastadapter-extensions-binding:5.7.0")
     implementation("com.mikepenz:fastadapter-extensions-diff:5.7.0")
 
     implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.9")
