@@ -61,7 +61,7 @@ dependencies {
     implementation("com.github.skydoves:balloon:1.4.8")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
-    val coilVersion = "2.4.0"
+    val coilVersion = "2.5.0"
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
     implementation("io.coil-kt:coil-svg:$coilVersion")
