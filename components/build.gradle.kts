@@ -55,7 +55,7 @@ dependencies {
     implementation("com.mikepenz:fastadapter-extensions-binding:5.6.0")
     implementation("com.mikepenz:fastadapter-extensions-diff:5.6.0")
 
-    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.8")
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.9")
 
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("com.github.skydoves:balloon:1.4.8")
