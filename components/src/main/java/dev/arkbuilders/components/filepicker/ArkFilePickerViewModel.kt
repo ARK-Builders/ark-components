@@ -49,11 +49,39 @@ internal class ArkFilePickerViewModel(
 
     init {
         viewModelScope.launch {
-            val rootsWithFavs = foldersRepo.provideFolders()
-            intent {
-                reduce {
-                    state.copy(rootsWithFavs = rootsWithFavs)
-                }
+            refreshRootsWithFavs()
+        }
+    }
+
+    fun addRoot(root:Path) {
+        viewModelScope.launch {
+            foldersRepo.addRoot(root)
+            refreshRootsWithFavs()
+        }
+    }
+
+    fun addFavorite(favorite: Path) {
+        viewModelScope.launch {
+            val favoritePath = favorite.toRealPath()
+            val folders = foldersRepo.provideFolders()
+            val root = folders.keys.find { favoritePath.startsWith(it) }
+                ?: throw IllegalStateException(
+                    "Can't add favorite if it's root is not added"
+                )
+            val favoriteRelativePath = root.relativize(favoritePath)
+            if (folders[root]?.contains(favoriteRelativePath) == true) {
+                throw AssertionError("Path must be checked in RootPicker")
+            }
+            foldersRepo.addFavorite(root, favoriteRelativePath)
+            refreshRootsWithFavs()
+        }
+    }
+
+    private suspend fun refreshRootsWithFavs() {
+        val rootsWithFavs = foldersRepo.provideFolders()
+        intent {
+            reduce {
+                state.copy(rootsWithFavs = rootsWithFavs)
             }
         }
     }
@@ -77,7 +105,9 @@ internal class ArkFilePickerViewModel(
             onPathPicked(path)
     }
 
-    fun onPickBtnClick() = intent { onPathPicked(state.currentPath) }
+    fun onPickBtnClick() = intent {
+        onPathPicked(state.currentPath)
+    }
 
     fun onDeviceSelected(selectedDevicePos: Int) = intent {
         val selectedDevice = state.devices[selectedDevicePos]

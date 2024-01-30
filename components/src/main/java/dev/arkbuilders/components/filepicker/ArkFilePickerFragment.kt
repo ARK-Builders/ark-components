@@ -7,11 +7,13 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -43,12 +45,15 @@ import dev.arkbuilders.components.databinding.ArkFilePickerDialogNewFolderBindin
 import dev.arkbuilders.components.databinding.ArkFilePickerHostFragmentBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFileBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFilesRootsPageBinding
+import dev.arkbuilders.components.filepicker.callback.OnFileItemLongClick
+import dev.arkbuilders.components.filepicker.callback.PinFileCallback
 import dev.arkbuilders.components.folderstree.FolderTreeView
 import dev.arkbuilders.components.utils.args
 import dev.arkbuilders.components.utils.dpToPx
 import dev.arkbuilders.components.utils.formatSize
 import dev.arkbuilders.components.utils.iconForExtension
 import dev.arkbuilders.components.utils.setDragSensitivity
+import dev.arkbuilders.components.utils.toast
 import java.io.File
 import java.lang.Exception
 import java.nio.file.Path
@@ -87,6 +92,13 @@ open class ArkFilePickerFragment :
     }
 
     private val pagesAdapter = ItemAdapter<GenericItem>()
+    private var mCurrentRootsWithFavorites: Map<Path, List<Path>>? = null
+
+    private val mPinFileCallback = object : PinFileCallback {
+        override fun onPinFileClick(file: Path) {
+            pinFile(file)
+        }
+    }
 
     open fun onFolderChanged(currentFolder: Path) {}
     open fun onPick(pickedPath: Path) {}
@@ -162,6 +174,10 @@ open class ArkFilePickerFragment :
         }
     }
 
+    private fun isARKMode(): Boolean {
+        return binding.tabs.selectedTabPosition == 1
+    }
+
     private fun showCreateFolderDialog() {
         val builder = AlertDialog.Builder(activity, android.R.style.ThemeOverlay_Material_Dialog_Alert)
         builder.setTitle(R.string.ark_file_picker_new_folder)
@@ -180,6 +196,9 @@ open class ArkFilePickerFragment :
             }
 
             if (newFolder.mkdirs()) {
+                if (isARKMode()) {
+                    pinFile(newFolder.toPath())
+                }
                 //Reload current files tree
                 currentFolder?.let { viewModel.onItemClick(it) }
                 dialog.dismiss()
@@ -189,6 +208,8 @@ open class ArkFilePickerFragment :
     }
 
     private fun render(state: FilePickerState) = binding.apply {
+        mCurrentRootsWithFavorites = state.rootsWithFavs
+
         displayPath(state)
 
         val deviceText = if (state.currentDevice == INTERNAL_STORAGE)
@@ -325,7 +346,8 @@ open class ArkFilePickerFragment :
             )
         } else {
             listOf(
-                FilesPage(this, viewModel, itemsPluralId!!),
+                FilesPage(this, viewModel, itemsPluralId!!,
+                    pinFileCallback = mPinFileCallback),
                 RootsPage(this, viewModel)
             )
         }
@@ -363,6 +385,43 @@ open class ArkFilePickerFragment :
         private const val DIALOG_WIDTH = 300f
         private const val PATH_PART_PADDING = 4f
     }
+
+    private fun pinFile(file: Path) {
+        val roots = mCurrentRootsWithFavorites?.keys
+        val root = roots?.find { root -> file.startsWith(root) }
+        val favorites = mCurrentRootsWithFavorites?.get(root)?.flatten()
+
+        root?.let {
+
+            //Make sure file isn't inside a root folder
+            if (root != file) {
+                var foundAsFavorite = false
+                favorites?.forEach {
+                    if (file.endsWith(it)) {
+                        foundAsFavorite = true
+                        return@forEach
+                    }
+                }
+
+                if (!foundAsFavorite) {
+                    viewModel.addFavorite(file)
+                    activity?.toast(R.string.ark_file_picker_pinned_as_favorite)
+                } else {
+                    activity?.toast(R.string.ark_file_picker_already_a_favorite)
+                }
+            } else {
+                activity?.toast(R.string.ark_file_picker_already_be_a_root)
+            }
+        } ?: let {
+
+            if (mCurrentRootsWithFavorites?.keys?.contains(file) == true) {
+                activity?.toast(R.string.ark_file_picker_already_be_a_root)
+            } else {
+                viewModel.addRoot(file)
+                activity?.toast(R.string.ark_file_picker_pinned_as_root)
+            }
+        }
+    }
 }
 
 private fun pickerImageLoader(ctx: Context) = ImageLoader.Builder(ctx)
@@ -386,7 +445,8 @@ private fun pickerImageLoader(ctx: Context) = ImageLoader.Builder(ctx)
 internal class FilesPage(
     private val fragment: Fragment,
     private val viewModel: ArkFilePickerViewModel,
-    private val itemsPluralId: Int
+    private val itemsPluralId: Int,
+    private val pinFileCallback: PinFileCallback? = null
 ) : AbstractBindingItem<ArkFilePickerItemFilesRootsPageBinding>() {
     private val filesAdapter = ItemAdapter<FileItem>()
     private var currentFiles = emptyList<Path>()
@@ -399,10 +459,13 @@ internal class FilesPage(
         parent: ViewGroup?
     ) = ArkFilePickerItemFilesRootsPageBinding.inflate(inflater, parent, false)
 
+    private var mBinding: ArkFilePickerItemFilesRootsPageBinding? = null
+
     override fun bindView(
         binding: ArkFilePickerItemFilesRootsPageBinding,
         payloads: List<Any>
     ) = with(binding) {
+        mBinding = binding
         rvFiles.adapter = FastAdapter.with(filesAdapter)
         viewModel.observe(fragment, state = ::render)
     }
@@ -411,7 +474,29 @@ internal class FilesPage(
         if (currentFiles == state.files) return
 
         filesAdapter.setNewList(state.files.map {
-            FileItem(it, viewModel, itemsPluralId, imageLoader)
+            FileItem(it, viewModel, itemsPluralId, imageLoader,
+                onLongClick = object : OnFileItemLongClick {
+                override fun onLongClick(file: Path) {
+                    val currentItem = filesAdapter.itemList.items.firstOrNull { item ->
+                        item.getFile().toString() == file.toString()
+                    }
+                    currentItem?.let {
+                        val anchorView = mBinding?.rvFiles?.findViewHolderForAdapterPosition(
+                            filesAdapter.getAdapterPosition(currentItem))?.itemView
+                        anchorView?.let { anchor ->
+                            val popupMenu = PopupMenu(fragment.activity, anchor, Gravity.END)
+                            popupMenu.menuInflater.inflate(R.menu.file_select_menu, popupMenu.menu)
+                            popupMenu.setOnMenuItemClickListener {
+                                pinFileCallback?.onPinFileClick(file)
+                                true
+                            }
+                            popupMenu.show()
+                        }
+
+
+                    } ?: let { return@let }
+                }
+            })
         })
 
         currentFiles = state.files
@@ -423,6 +508,7 @@ internal class FileItem(
     private val viewModel: ArkFilePickerViewModel,
     private val itemsPluralId: Int,
     private val imageLoader: ImageLoader,
+    private val onLongClick: OnFileItemLongClick? = null
 ) : AbstractBindingItem<ArkFilePickerItemFileBinding>() {
     override val type = 0
 
@@ -437,6 +523,11 @@ internal class FileItem(
     ) = with(binding) {
         root.setOnClickListener {
             viewModel.onItemClick(file)
+        }
+
+        root.setOnLongClickListener {
+            onLongClick?.onLongClick(file)
+            true
         }
         binding.tvName.text = file.name
         if (file.isDirectory()) bindFolder(file, this)
@@ -473,6 +564,10 @@ internal class FileItem(
 
         binding.iv.dispose()
         binding.iv.setImageResource(R.drawable.ark_file_picker_ic_folder)
+    }
+
+    fun getFile(): Path {
+        return file
     }
 }
 
