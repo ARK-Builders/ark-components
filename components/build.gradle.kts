@@ -58,7 +58,7 @@ dependencies {
     implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.9")
 
     implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("com.github.skydoves:balloon:1.4.8")
+    implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     val coilVersion = "2.4.0"
