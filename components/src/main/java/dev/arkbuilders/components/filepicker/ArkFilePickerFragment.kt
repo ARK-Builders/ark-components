@@ -32,6 +32,7 @@ import coil.dispose
 import coil.load
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -46,7 +47,6 @@ import dev.arkbuilders.components.databinding.ArkFilePickerHostFragmentBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFileBinding
 import dev.arkbuilders.components.databinding.ArkFilePickerItemFilesRootsPageBinding
 import dev.arkbuilders.components.filepicker.callback.OnFileItemLongClick
-import dev.arkbuilders.components.filepicker.callback.PinFileCallback
 import dev.arkbuilders.components.folderstree.FolderTreeView
 import dev.arkbuilders.components.utils.args
 import dev.arkbuilders.components.utils.dpToPx
@@ -92,11 +92,21 @@ open class ArkFilePickerFragment :
     }
 
     private val pagesAdapter = ItemAdapter<GenericItem>()
-    private var mCurrentRootsWithFavorites: Map<Path, List<Path>>? = null
 
-    private val mPinFileCallback = object : PinFileCallback {
-        override fun onPinFileClick(file: Path) {
-            pinFile(file)
+    private val mSharedPref by lazy { activity?.getPreferences(Context.MODE_PRIVATE) }
+    private val PREF_LAST_ACTIVE_TAB_INDEX = "pref_last_active_tab_index"
+
+    private val mOnTabSelectListener by lazy {
+        object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                mSharedPref?.edit()?.putInt(PREF_LAST_ACTIVE_TAB_INDEX, tab?.position ?: 0)?.apply()
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
         }
     }
 
@@ -160,6 +170,10 @@ open class ArkFilePickerFragment :
             TabLayoutMediator(tabs, vp) { tab, pos ->
                 tab.text = tabsTitle[pos]
             }.attach()
+            mSharedPref?.getInt(PREF_LAST_ACTIVE_TAB_INDEX, 0)?.let {
+                tabs.getTabAt(it)?.select()
+            }
+            tabs.addOnTabSelectedListener(mOnTabSelectListener)
         } else {
             tabs.isVisible = false
         }
@@ -197,7 +211,7 @@ open class ArkFilePickerFragment :
 
             if (newFolder.mkdirs()) {
                 if (isARKMode()) {
-                    pinFile(newFolder.toPath())
+                    viewModel.pinFile(newFolder.toPath())
                 }
                 //Reload current files tree
                 currentFolder?.let { viewModel.onItemClick(it) }
@@ -208,7 +222,6 @@ open class ArkFilePickerFragment :
     }
 
     private fun render(state: FilePickerState) = binding.apply {
-        mCurrentRootsWithFavorites = state.rootsWithFavs
 
         displayPath(state)
 
@@ -271,6 +284,23 @@ open class ArkFilePickerFragment :
                         effect.path.toString()
                     )
                 })
+        }
+
+        FilePickerSideEffect.PinAsRoot ->
+            activity?.toast(R.string.ark_file_picker_pinned_as_root)
+
+        FilePickerSideEffect.AlreadyRoot ->
+            activity?.toast(R.string.ark_file_picker_already_be_a_root)
+
+        FilePickerSideEffect.PinAsFavorite ->
+            activity?.toast(R.string.ark_file_picker_pinned_as_favorite)
+
+        FilePickerSideEffect.AlreadyFavorite ->
+            activity?.toast(R.string.ark_file_picker_already_a_favorite)
+
+        FilePickerSideEffect.PinAsFirstRoot -> {
+            pagesAdapter.set(getPages())
+            activity?.toast(R.string.ark_file_picker_pinned_as_root)
         }
     }
 
@@ -338,7 +368,7 @@ open class ArkFilePickerFragment :
         }
     }
 
-    private fun getPages() = if (showRoots!!) {
+    private fun getPages() = if (showRoots!! && viewModel.haveRoot()) {
         if (rootsFirstPage!!) {
             listOf(
                 RootsPage(this, viewModel),
@@ -346,8 +376,7 @@ open class ArkFilePickerFragment :
             )
         } else {
             listOf(
-                FilesPage(this, viewModel, itemsPluralId!!,
-                    pinFileCallback = mPinFileCallback),
+                FilesPage(this, viewModel, itemsPluralId!!),
                 RootsPage(this, viewModel)
             )
         }
@@ -356,7 +385,6 @@ open class ArkFilePickerFragment :
             FilesPage(this, viewModel, itemsPluralId!!)
         )
     }
-
 
     fun setConfig(config: ArkFilePickerConfig) {
         titleStringId = config.titleStringId
@@ -386,42 +414,6 @@ open class ArkFilePickerFragment :
         private const val PATH_PART_PADDING = 4f
     }
 
-    private fun pinFile(file: Path) {
-        val roots = mCurrentRootsWithFavorites?.keys
-        val root = roots?.find { root -> file.startsWith(root) }
-        val favorites = mCurrentRootsWithFavorites?.get(root)?.flatten()
-
-        root?.let {
-
-            //Make sure file isn't inside a root folder
-            if (root != file) {
-                var foundAsFavorite = false
-                favorites?.forEach {
-                    if (file.endsWith(it)) {
-                        foundAsFavorite = true
-                        return@forEach
-                    }
-                }
-
-                if (!foundAsFavorite) {
-                    viewModel.addFavorite(file)
-                    activity?.toast(R.string.ark_file_picker_pinned_as_favorite)
-                } else {
-                    activity?.toast(R.string.ark_file_picker_already_a_favorite)
-                }
-            } else {
-                activity?.toast(R.string.ark_file_picker_already_be_a_root)
-            }
-        } ?: let {
-
-            if (mCurrentRootsWithFavorites?.keys?.contains(file) == true) {
-                activity?.toast(R.string.ark_file_picker_already_be_a_root)
-            } else {
-                viewModel.addRoot(file)
-                activity?.toast(R.string.ark_file_picker_pinned_as_root)
-            }
-        }
-    }
 }
 
 private fun pickerImageLoader(ctx: Context) = ImageLoader.Builder(ctx)
@@ -445,8 +437,7 @@ private fun pickerImageLoader(ctx: Context) = ImageLoader.Builder(ctx)
 internal class FilesPage(
     private val fragment: Fragment,
     private val viewModel: ArkFilePickerViewModel,
-    private val itemsPluralId: Int,
-    private val pinFileCallback: PinFileCallback? = null
+    private val itemsPluralId: Int
 ) : AbstractBindingItem<ArkFilePickerItemFilesRootsPageBinding>() {
     private val filesAdapter = ItemAdapter<FileItem>()
     private var currentFiles = emptyList<Path>()
@@ -487,7 +478,7 @@ internal class FilesPage(
                             val popupMenu = PopupMenu(fragment.activity, anchor, Gravity.END)
                             popupMenu.menuInflater.inflate(R.menu.file_select_menu, popupMenu.menu)
                             popupMenu.setOnMenuItemClickListener {
-                                pinFileCallback?.onPinFileClick(file)
+                                viewModel.pinFile(file)
                                 true
                             }
                             popupMenu.show()
