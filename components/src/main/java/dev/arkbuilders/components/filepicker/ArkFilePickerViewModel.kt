@@ -3,6 +3,7 @@ package dev.arkbuilders.components.filepicker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dev.arkbuilders.arklib.arkGlobal
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -13,7 +14,10 @@ import org.orbitmvi.orbit.viewmodel.container
 import dev.arkbuilders.arklib.data.folders.FoldersRepo
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.listChildren
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.nio.file.Path
+import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
 enum class ArkFilePickerMode {
@@ -34,6 +38,12 @@ internal sealed class FilePickerSideEffect {
     object DismissDialog : FilePickerSideEffect()
     object ToastAccessDenied : FilePickerSideEffect()
     class NotifyPathPicked(val path: Path) : FilePickerSideEffect()
+    data object PinAsRoot : FilePickerSideEffect()
+    data object AlreadyRoot : FilePickerSideEffect()
+    data object PinAsFavorite : FilePickerSideEffect()
+    data object AlreadyFavorite : FilePickerSideEffect()
+    data object PinAsFirstRoot : FilePickerSideEffect()
+
 }
 
 internal class ArkFilePickerViewModel(
@@ -53,15 +63,13 @@ internal class ArkFilePickerViewModel(
         }
     }
 
-    fun addRoot(root:Path) {
-        viewModelScope.launch {
-            foldersRepo.addRoot(root)
-            refreshRootsWithFavs()
-        }
+    private suspend fun addRoot(root:Path) = withContext(Dispatchers.IO) {
+        foldersRepo.addRoot(root)
+        refreshRootsWithFavs()
     }
 
-    fun addFavorite(favorite: Path) {
-        viewModelScope.launch {
+    private fun addFavorite(favorite: Path) {
+        viewModelScope.launch(Dispatchers.IO) {
             val favoritePath = favorite.toRealPath()
             val folders = foldersRepo.provideFolders()
             val root = folders.keys.find { favoritePath.startsWith(it) }
@@ -164,6 +172,49 @@ internal class ArkFilePickerViewModel(
         children.addAll(files.sorted())
 
         return children
+    }
+
+    fun haveRoot(): Boolean {
+        val arkGlobal = deviceStorageUtils.listStorages().firstOrNull()?.arkGlobal()
+        return arkGlobal?.exists() == true
+    }
+
+    fun pinFile(file: Path) = intent {
+        val rootsWithFavorites = container.stateFlow.value.rootsWithFavs
+        val roots = rootsWithFavorites.keys
+        val root = roots.find { root -> file.startsWith(root) }
+        val favorites = rootsWithFavorites[root]?.flatten()
+        val haveRoot = haveRoot()
+
+        root?.let {
+
+            //Make sure file isn't inside a root folder
+            if (root != file) {
+                val foundAsFavorite = favorites?.any { file.endsWith(it) } ?: false
+
+                if (!foundAsFavorite) {
+                    addFavorite(file)
+                    postSideEffect(FilePickerSideEffect.PinAsFavorite)
+                } else {
+                    postSideEffect(FilePickerSideEffect.AlreadyFavorite)
+                }
+            } else {
+                postSideEffect(FilePickerSideEffect.AlreadyRoot)
+            }
+        } ?: let {
+
+            if (rootsWithFavorites.keys.contains(file)) {
+                postSideEffect(FilePickerSideEffect.AlreadyRoot)
+            } else {
+
+                addRoot(file)
+                if (!haveRoot) {
+                    postSideEffect(FilePickerSideEffect.PinAsFirstRoot)
+                } else {
+                    postSideEffect(FilePickerSideEffect.PinAsRoot)
+                }
+            }
+        }
     }
 }
 
