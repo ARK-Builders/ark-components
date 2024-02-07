@@ -9,6 +9,8 @@ on:
 
 jobs:
   build:
+    if: ${{ ! startsWith(github.actor, 'dependabot') }}
+    environment: Development
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -22,6 +24,21 @@ jobs:
 
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1.0.5
+
+
+    - name: Decrypt the keystore for signing
+      run: |
+        echo "${{ secrets.KEYSTORE_ENCRYPTED }}" > keystore.asc
+        gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch keystore.asc > keystore.jks
       
     - name: Build components
       run: ./gradlew assembleRelease
+
+    - name: Build release sample APK
+      run: ./gradlew sample:assembleRelease
+
+    - name: Upload release APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-universal-apk
+        path: ./sample/build/outputs/apk/release/sample-release.apk
