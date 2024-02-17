@@ -48,7 +48,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("org.orbit-mvi:orbit-viewmodel:6.1.0")
     implementation("dev.arkbuilders:arklib:0.3.5")
     implementation("com.mikepenz:fastadapter:5.7.0")
