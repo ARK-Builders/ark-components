@@ -89,22 +89,9 @@ class FolderTreeView(
     }
 
     private fun onExpandClick(node: FolderNode) {
-        when(val actualNode = nodes.find { it.path == node.path }!!) {
-            is DeviceNode -> {
-                // Do nothing
-                if (actualNode.isExpanded)
-                    removeChildrenExceptParent(actualNode)
-                else
-                    insertChildren(actualNode)
-                setNodes(nodes)
-            }
-            else -> {
-                if (actualNode.isExpanded)
-                    removeChildrenCascade(actualNode)
-                else
-                    insertChildren(actualNode)
-                setNodes(nodes)
-            }
+        when (val actualNode = nodes.find { it.path == node.path }!!) {
+            is DeviceNode -> handleCollapsibleParentNode(actualNode) { removeChildrenCascadeExceptParent(actualNode) }
+            else -> handleCollapsibleParentNode(actualNode) { removeChildrenCascade(actualNode) }
         }
     }
 
@@ -114,11 +101,22 @@ class FolderTreeView(
         nodes.addAll(parentPos + 1, parent.children)
     }
 
-    private fun removeChildrenExceptParent(parent: FolderNode) {
+    private fun removeChildrenCascadeExceptParent(parent: FolderNode) {
         parent.isExpanded = false
         nodes.removeIf {
             it != parent
         }
+    }
+
+    private inline fun handleCollapsibleParentNode(
+        actualNode: FolderNode,
+        removeNodes: (FolderNode) -> Unit
+    ) {
+        if (actualNode.isExpanded)
+            removeNodes(actualNode)
+        else
+            insertChildren(actualNode)
+        setNodes(nodes)
     }
 
     private fun removeChildrenCascade(parent: FolderNode) {
