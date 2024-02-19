@@ -37,8 +37,20 @@ jobs:
     - name: Build release sample APK
       run: ./gradlew sample:assembleRelease
 
-    - name: Upload release APK
+    - name: Upload release arm64-v8a APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-arm64-v8a-apk
+        path: ./sample/build/outputs/apk/release/sample-arm64-v8a-release.apk
+
+    - name: Upload release armeabi-v7a APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-armeabi-v7a-apk
+        path: ./sample/build/outputs/apk/release/sample-armeabi-v7a-release.apk
+
+    - name: Upload release universal APK
       uses: actions/upload-artifact@v3
       with:
         name: release-universal-apk
-        path: ./sample/build/outputs/apk/release/sample-release.apk
+        path: ./sample/build/outputs/apk/release/sample-universal-release.apk
