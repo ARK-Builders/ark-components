@@ -24,8 +24,18 @@ dependencyResolutionManagement {
             }
         }
     }
+
+    versionCatalogs {
+        create("libraries") {
+            from(files("./gradle/libs.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = "Ark Components"
+include(":scorewidget")
+include(":tagselector")
+include(":folderstree")
+include(":utils")
+include(":filepicker")
 include(":sample")
-include(":components")
