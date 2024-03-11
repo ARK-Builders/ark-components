@@ -4,12 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - tagselector
-    paths-ignore:
+      - tagselector/**
   pull_request:
     branches: [ main ]
     paths:
-      - tagselector
+      - tagselector/**
 
 
 jobs:
