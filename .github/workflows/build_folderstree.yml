@@ -4,11 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - folderstree
+      - folderstree/**
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
     paths:
-      - folderstree
+      - folderstree/**
 
 
 jobs:

@@ -4,12 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - utils
-    paths-ignore:
+      - utils/**
   pull_request:
     branches: [ main ]
     paths:
-      - utils
+      - utils/**
 
 
 jobs:
