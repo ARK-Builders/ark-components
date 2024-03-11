@@ -5,8 +5,7 @@ on:
     branches: [ main ]
     paths:
       - filepicker/**
-    paths-ignore:
-      - './**'
+      - '!./**'
   pull_request:
     branches: [ main ]
     paths:
