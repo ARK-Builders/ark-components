@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - filepicker
+      - filepicker/**
   pull_request:
     branches: [ main ]
     paths:
-      - filepicker
+      - filepicker/**
 
 
 jobs:
