@@ -1,8 +1,8 @@
 [versions]
-arkComponentUtils = "0.0.9-SNAPSHOT-01"
+arkComponentUtils = "0.1.0-SNAPSHOT"
 akrComponentFoldersTree = "0.0.9-SNAPSHOT-02"
 akrComponentTagSelector = "0.0.9-SNAPSHOT-02"
-akrComponentScoreWidget = "0.0.9-SNAPSHOT-02"
+akrComponentScoreWidget = "0.1.0-SNAPSHOT"
 arkComponentFilePicker = "0.1.0-SNAPSHOT"
 coil = "2.4.0"
 androidxFragmentKtx = "1.6.1"
