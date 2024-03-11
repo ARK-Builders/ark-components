@@ -4,12 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - scorewidget
-    paths-ignore:
+      - scorewidget/**
   pull_request:
     branches: [ main ]
     paths:
-      - scorewidget
+      - scorewidget/**
 
 
 jobs:

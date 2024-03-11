@@ -1,4 +1,4 @@
-name: Release the components
+name: Release filepicker
 
 on:
   push:
