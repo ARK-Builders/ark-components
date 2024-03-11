@@ -1,4 +1,4 @@
-name: Build the components
+name: Build filepicker module
 
 on:
   push:

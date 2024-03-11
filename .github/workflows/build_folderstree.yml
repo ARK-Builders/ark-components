@@ -1,12 +1,11 @@
-name: Build the components
+name: Build folderstree module
 
 on:
   push:
     branches: [ main ]
     paths:
       - folderstree/**
-    paths-ignore:
-      - './**'
+      - '!./**'
   pull_request:
     branches: [ main ]
     paths:
