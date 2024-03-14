@@ -73,7 +73,7 @@ dependencies {
     implementation(libraries.viewbinding.property.delegate)
 }
 
-val libVersion: String = scmVersion.version
+val libVersion: String = /*scmVersion.version*/"0.2.0-SNAPSHOT"
 
 publishing {
     publications {
