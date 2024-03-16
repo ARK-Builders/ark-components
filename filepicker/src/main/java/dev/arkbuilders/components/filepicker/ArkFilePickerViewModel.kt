@@ -43,6 +43,7 @@ internal sealed class FilePickerSideEffect {
     data object PinAsFavorite : FilePickerSideEffect()
     data object AlreadyFavorite : FilePickerSideEffect()
     data object PinAsFirstRoot : FilePickerSideEffect()
+    data object CannotPinFile : FilePickerSideEffect()
 
 }
 
@@ -180,6 +181,11 @@ internal class ArkFilePickerViewModel(
     }
 
     fun pinFile(file: Path) = intent {
+        if (!file.isDirectory()) {
+            postSideEffect(FilePickerSideEffect.CannotPinFile)
+            return@intent
+        }
+
         val rootsWithFavorites = container.stateFlow.value.rootsWithFavs
         val roots = rootsWithFavorites.keys
         val root = roots.find { root -> file.startsWith(root) }
