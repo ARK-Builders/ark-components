@@ -302,6 +302,10 @@ open class ArkFilePickerFragment :
             pagesAdapter.set(getPages())
             activity?.toast(R.string.ark_file_picker_pinned_as_root)
         }
+
+        FilePickerSideEffect.CannotPinFile -> {
+            activity?.toast(R.string.ark_file_picker_pin_folder_only)
+        }
     }
 
 
