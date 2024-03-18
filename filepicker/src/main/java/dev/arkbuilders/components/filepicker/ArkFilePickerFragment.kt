@@ -306,6 +306,10 @@ open class ArkFilePickerFragment :
         FilePickerSideEffect.CannotPinFile -> {
             activity?.toast(R.string.ark_file_picker_pin_folder_only)
         }
+
+        FilePickerSideEffect.NestedRootProhibited -> {
+            activity?.toast(R.string.ark_file_nested_root_inside)
+        }
     }
 
 
