@@ -44,6 +44,7 @@ internal sealed class FilePickerSideEffect {
     data object AlreadyFavorite : FilePickerSideEffect()
     data object PinAsFirstRoot : FilePickerSideEffect()
     data object CannotPinFile : FilePickerSideEffect()
+    data object NestedRootProhibited : FilePickerSideEffect()
 
 }
 
@@ -190,6 +191,17 @@ internal class ArkFilePickerViewModel(
         val roots = rootsWithFavorites.keys
         val root = roots.find { root -> file.startsWith(root) }
         val favorites = rootsWithFavorites[root]?.flatten()
+
+        val hasNestedRoot = roots.contains(file)
+                || (roots.indexOfFirst { path ->
+                    val index = path.toString().indexOf(file.toString())
+                    (index >= 0) && (path.toString()[index] == '/') } >= 0)
+
+        if (hasNestedRoot) {
+            postSideEffect(FilePickerSideEffect.NestedRootProhibited)
+            return@intent
+        }
+
         val haveRoot = haveRoot()
 
         root?.let {
