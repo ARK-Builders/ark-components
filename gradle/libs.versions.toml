@@ -1,8 +1,8 @@
 [versions]
 arkComponentUtils = "0.0.9-SNAPSHOT-01"
-akrComponentFoldersTree = "0.0.9-SNAPSHOT-02"
-akrComponentTagSelector = "0.0.9-SNAPSHOT-02"
-akrComponentScoreWidget = "0.0.9-SNAPSHOT-02"
+arkComponentFoldersTree = "0.0.9-SNAPSHOT-02"
+arkComponentTagSelector = "0.0.9-SNAPSHOT-02"
+arkComponentScoreWidget = "0.0.9-SNAPSHOT-02"
 arkComponentFilePicker = "0.1.0-SNAPSHOT"
 coil = "2.4.0"
 androidxFragmentKtx = "1.6.1"
@@ -21,9 +21,9 @@ flexbox = "3.0.0"
 
 [libraries]
 ark-component-utils = { group = "dev.arkbuilders.components", name = "utils", version.ref = "arkComponentUtils" }
-ark-component-folderstree = { group = "dev.arkbuilders.components", name = "folderstree", version.ref = "akrComponentFoldersTree" }
-ark-component-tagselector = { group = "dev.arkbuilders.components", name = "tagselector", version.ref = "akrComponentTagSelector" }
-ark-component-scorewidget = { group = "dev.arkbuilders.components", name = "scorewidget", version.ref = "akrComponentScoreWidget" }
+ark-component-folderstree = { group = "dev.arkbuilders.components", name = "folderstree", version.ref = "arkComponentFoldersTree" }
+ark-component-tagselector = { group = "dev.arkbuilders.components", name = "tagselector", version.ref = "arkComponentTagSelector" }
+ark-component-scorewidget = { group = "dev.arkbuilders.components", name = "scorewidget", version.ref = "arkComponentScoreWidget" }
 ark-component-filepicker = { group = "dev.arkbuilders.components", name = "filepicker", version.ref = "arkComponentFilePicker" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
