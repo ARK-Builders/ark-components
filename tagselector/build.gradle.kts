@@ -52,6 +52,7 @@ dependencies {
     implementation(libraries.skydoves.balloon)
     implementation(libraries.arklib)
     implementation(libraries.orbit.mvi.viewmodel)
+    implementation(project(":utils"))
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)
