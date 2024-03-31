@@ -54,6 +54,8 @@ dependencies {
     implementation(libraries.androidx.core.ktx)
     implementation(libraries.androidx.appcompat)
     implementation(libraries.android.material)
+    implementation(project(":utils"))
+    implementation(project(":folderstree"))
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)
