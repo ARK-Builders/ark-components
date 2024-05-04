@@ -17,6 +17,7 @@ import dev.arkbuilders.components.filepicker.ArkFilePickerConfig
 import dev.arkbuilders.components.filepicker.ArkFilePickerFragment
 import dev.arkbuilders.components.filepicker.ArkFilePickerMode
 import dev.arkbuilders.components.filepicker.onArkPathPicked
+import dev.arkbuilders.sample.storage.StorageDemoFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +48,10 @@ class MainActivity : AppCompatActivity() {
             ArkFilePickerFragment
                 .newInstance(getFilePickerConfig(mode = ArkFilePickerMode.FILE))
                 .show(supportFragmentManager, null)
+        }
+
+        findViewById<MaterialButton>(R.id.btn_storage_demo).setOnClickListener {
+            StorageDemoFragment().show(supportFragmentManager, StorageDemoFragment::class.java.name)
         }
     }
 
