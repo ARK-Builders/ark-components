@@ -41,8 +41,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":utils"))
 
-    implementation(libraries.ark.component.utils)
     implementation(libraries.androidx.core.ktx)
     implementation(libraries.androidx.appcompat)
     implementation(libraries.android.material)

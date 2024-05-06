@@ -46,10 +46,8 @@ android {
 }
 
 dependencies {
-    implementation(libraries.ark.component.utils)
-    implementation(libraries.ark.component.folderstree)
-    implementation(libraries.ark.component.tagselector)
-    implementation(libraries.ark.component.scorewidget)
+    implementation(project(":utils"))
+    implementation(project(":folderstree"))
 
     implementation(libraries.androidx.core.ktx)
     implementation(libraries.androidx.appcompat)
