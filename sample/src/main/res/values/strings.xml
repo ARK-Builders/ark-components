@@ -3,4 +3,9 @@
     <string name="file_picker_title">Pick favorite folder</string>
     <string name="file_picker_open_folder">Open folder picker</string>
     <string name="file_picker_open_file">Open file picker</string>
+    <string name="open_score_widget">Open score widget</string>
+    <string name="open_storage_demo">Open Storage Demo</string>
+    <string name="new_map_entry">New map entry</string>
+    <string name="delete_map_entry">Delete map entry</string>
+    <string name="empty_map">Empty</string>
 </resources>
