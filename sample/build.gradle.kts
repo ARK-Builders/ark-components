@@ -70,9 +70,9 @@ android {
 }
 
 dependencies {
-    implementation(libraries.ark.component.filepicker)
-    implementation(libraries.arklib)
+    implementation(project(":filepicker"))
 
+    implementation(libraries.arklib)
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(libraries.androidx.appcompat)
     implementation(libraries.android.material)
