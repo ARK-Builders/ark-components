@@ -2,10 +2,10 @@ package dev.arkbuilders.components.about
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +16,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -98,7 +98,7 @@ fun ArkAbout(
                 color = ArkColor.TextTertiary
             )
             Row(
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SocialLink(
@@ -122,7 +122,7 @@ fun ArkAbout(
             }
             OutlinedButton(
                 modifier = Modifier
-                    .padding(top = 32.dp)
+                    .padding(top = 28.dp)
                     .fillMaxWidth(),
                 onClick = { ctx.openLink(privacyPolicyUrl) },
                 border = BorderStroke(
@@ -244,12 +244,14 @@ fun ArkAbout(
 
 @Composable
 private fun SocialLink(painter: Painter, text: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+    TextButton(
+        modifier = Modifier.defaultMinSize(
+            minWidth = 1.dp,
+            minHeight = 1.dp
+        ),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+        onClick = { onClick() },
+        shape = RoundedCornerShape(4.dp)
     ) {
         Icon(
             modifier = Modifier.size(20.dp),
