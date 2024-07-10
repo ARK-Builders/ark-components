@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 
-fun Context.openLink(url: String, showToastIfFailed: Boolean = true) {
+internal fun Context.openLink(url: String, showToastIfFailed: Boolean = true) {
     try {
         startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)))
     } catch (e: Throwable) {
@@ -19,7 +19,7 @@ fun Context.openLink(url: String, showToastIfFailed: Boolean = true) {
     }
 }
 
-fun Context.openEmail(mailTo: String, showToastIfFailed: Boolean = true) {
+internal fun Context.openEmail(mailTo: String, showToastIfFailed: Boolean = true) {
     try {
         val uri = Uri.parse("mailto:$mailTo")
         startActivity(Intent(Intent.ACTION_SENDTO, uri))
