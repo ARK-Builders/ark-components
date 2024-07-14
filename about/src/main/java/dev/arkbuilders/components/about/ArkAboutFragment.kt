@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import dev.arkbuilders.components.about.presentation.ArkAbout
 
-class AboutFragment : Fragment(R.layout.fragment_about) {
+class ArkAboutFragment : Fragment(R.layout.fragment_about) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -48,7 +48,7 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
             appLogoResID: Int,
             versionName: String,
             privacyPolicyUrl: String
-        ) = AboutFragment().apply {
+        ) = ArkAboutFragment().apply {
             arguments = Bundle().apply {
                 putString(APP_NAME_KEY, appName)
                 putInt(APP_LOGO_KEY, appLogoResID)
