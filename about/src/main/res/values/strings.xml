@@ -14,7 +14,7 @@
     <string name="about_eth_wallet">0x9765C5aC38175BFbd2dC7a840b63e50762B80a1b</string>
     <string name="about_donate_eth">Donate using Ethereum</string>
     <string name="about_donate_btc">Donate using Bitcoin</string>
-    <string name="ark_website_url">https://www.ark-builders.dev/</string>
+    <string name="ark_website_url" translatable="false">https://www.ark-builders.dev/</string>
     <string name="ark_tg_url" translatable="false">https://t.me/ark_builders</string>
     <string name="ark_contribute_url" translatable="false">https://www.ark-builders.dev/contribute/?tab=goodFirstIssue</string>
     <string name="about_ark_buy_coffee_url" translatable="false">https://buymeacoffee.com/arkbuilders</string>
@@ -28,4 +28,7 @@
     <string name="about_donate_using_btc">Donate using BTC</string>
     <string name="about_we_greatly_appreciate_every_bit_of_support">We greatly appreciate every bit of support!</string>
     <string name="about_support_us">Support us</string>
+    <string name="website">Website</string>
+    <string name="telegram" translatable="false">Telegram</string>
+    <string name="discord" translatable="false">Discord</string>
 </resources>

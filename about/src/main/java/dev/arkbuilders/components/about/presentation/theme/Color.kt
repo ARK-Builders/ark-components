@@ -1,4 +1,4 @@
-package dev.arkbuilders.components.about
+package dev.arkbuilders.components.about.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

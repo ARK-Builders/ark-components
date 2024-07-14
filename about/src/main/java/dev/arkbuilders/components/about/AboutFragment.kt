@@ -6,6 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import dev.arkbuilders.components.about.presentation.ArkAbout
 
 class AboutFragment : Fragment(R.layout.fragment_about) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

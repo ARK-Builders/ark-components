@@ -1,4 +1,4 @@
-package dev.arkbuilders.components.about
+package dev.arkbuilders.components.about.presentation.ui
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -9,13 +9,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -31,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.arkbuilders.components.about.R
+import dev.arkbuilders.components.about.presentation.openEmail
+import dev.arkbuilders.components.about.presentation.theme.ArkColor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun QRCryptoDialog(
@@ -91,16 +93,19 @@ private fun Content(
 ) {
     val ctx = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/jpg")) { uri ->
             uri ?: return@rememberLauncherForActivityResult
-            val input = ctx.resources.openRawResource(qrBitmap)
-            ctx.contentResolver.openOutputStream(uri).use { output ->
-                output?.let {
-                    input.copyTo(output)
+            scope.launch(Dispatchers.IO) {
+                val input = ctx.resources.openRawResource(qrBitmap)
+                ctx.contentResolver.openOutputStream(uri).use { output ->
+                    output?.let {
+                        input.copyTo(output)
+                    }
                 }
+                input.close()
             }
-            input.close()
         }
 
     Box(

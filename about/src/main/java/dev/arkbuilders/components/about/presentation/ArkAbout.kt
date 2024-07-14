@@ -1,14 +1,12 @@
-package dev.arkbuilders.components.about
+package dev.arkbuilders.components.about.presentation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,7 +14,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,13 +22,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.arkbuilders.components.about.R
+import dev.arkbuilders.components.about.presentation.theme.ArkColor
+import dev.arkbuilders.components.about.presentation.ui.DonateBtn
+import dev.arkbuilders.components.about.presentation.ui.QRCryptoDialog
+import dev.arkbuilders.components.about.presentation.ui.SocialLink
 
 @Composable
 fun ArkAbout(
@@ -103,19 +104,19 @@ fun ArkAbout(
             ) {
                 SocialLink(
                     painterResource(R.drawable.ic_about_site),
-                    text = "Website"
+                    text = stringResource(R.string.website)
                 ) {
                     ctx.openLink(ctx.getString(R.string.ark_website_url))
                 }
                 SocialLink(
                     painterResource(R.drawable.ic_about_telegram),
-                    text = "Telegram"
+                    text = stringResource(R.string.telegram)
                 ) {
                     ctx.openLink(ctx.getString(R.string.ark_tg_url))
                 }
                 SocialLink(
                     painterResource(R.drawable.ic_about_discord),
-                    text = "Discord"
+                    text = stringResource(R.string.discord)
                 ) {
                     ctx.openLink(ctx.getString(R.string.ark_discord_url))
                 }
@@ -239,65 +240,5 @@ fun ArkAbout(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun SocialLink(painter: Painter, text: String, onClick: () -> Unit) {
-    TextButton(
-        modifier = Modifier.defaultMinSize(
-            minWidth = 1.dp,
-            minHeight = 1.dp
-        ),
-        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
-        onClick = { onClick() },
-        shape = RoundedCornerShape(4.dp)
-    ) {
-        Icon(
-            modifier = Modifier.size(20.dp),
-            painter = painter,
-            contentDescription = text,
-            tint = Color.Unspecified
-        )
-        Text(
-            modifier = Modifier.padding(start = 4.dp),
-            text = text,
-            color = ArkColor.TextTertiary
-        )
-    }
-}
-
-@Composable
-private fun DonateBtn(
-    modifier: Modifier,
-    icon: Painter,
-    text: String,
-    onClick: () -> Unit
-) {
-    OutlinedButton(
-        modifier = modifier,
-        onClick = onClick,
-        border = BorderStroke(
-            width = 1.dp,
-            color = ArkColor.BorderSecondary
-        ),
-        shape = RoundedCornerShape(8.dp),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Icon(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                .size(20.dp),
-            painter = icon,
-            contentDescription = "",
-            tint = Color.Unspecified
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-            text = text,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = ArkColor.FGSecondary
-        )
     }
 }
