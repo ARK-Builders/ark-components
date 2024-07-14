@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -257,4 +258,16 @@ private fun Content(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewDialogContent() {
+    Content(
+        title = "Donate using Bitcoin",
+        wallet = "0x041220",
+        fileName = "1.jpg",
+        qrBitmap = R.drawable.btc,
+        onDismiss = {}
+    )
 }

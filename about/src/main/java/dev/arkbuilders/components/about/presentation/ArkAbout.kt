@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.arkbuilders.components.about.R
@@ -241,4 +242,15 @@ fun ArkAbout(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewArkAbout() {
+    ArkAbout(
+        appName = "App name",
+        appLogoResId = R.drawable.qr_btc,
+        versionName = "1.0.0",
+        privacyPolicyUrl = ""
+    )
 }
