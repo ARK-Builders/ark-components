@@ -8,4 +8,5 @@
     <string name="new_map_entry">New map entry</string>
     <string name="delete_map_entry">Delete map entry</string>
     <string name="empty_map">Empty</string>
+    <string name="open_about">Open About</string>
 </resources>
