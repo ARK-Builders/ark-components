@@ -4,7 +4,7 @@ ARK Android contains a set of independent component libraries which can be used 
 
 ## How to release a new version of a module
 
-1. Create branch:
+1. Create branch
 ```
 git branch release/<module_name>_<major>.<minor>.<patch>
 git checkout ^
