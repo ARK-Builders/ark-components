@@ -37,6 +37,7 @@ import dev.arkbuilders.components.about.presentation.ui.SocialLink
 
 @Composable
 fun ArkAbout(
+    modifier: Modifier = Modifier,
     appName: String,
     @DrawableRes
     appLogoResId: Int,
