@@ -37,6 +37,7 @@ import dev.arkbuilders.components.about.presentation.ui.SocialLink
 
 @Composable
 fun ArkAbout(
+    modifier: Modifier = Modifier,
     appName: String,
     @DrawableRes
     appLogoResId: Int,
@@ -69,7 +70,7 @@ fun ArkAbout(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
         Column(
