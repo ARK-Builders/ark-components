@@ -71,7 +71,7 @@ dependencies {
     implementation(libraries.viewbinding.property.delegate)
 }
 
-val libVersion: String = scmVersion.version
+val libVersion: String = scmVersion.undecoratedVersion
 
 publishing {
     publications {
