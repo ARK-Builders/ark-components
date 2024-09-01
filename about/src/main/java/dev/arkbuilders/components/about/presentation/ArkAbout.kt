@@ -70,7 +70,7 @@ fun ArkAbout(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
         Column(
