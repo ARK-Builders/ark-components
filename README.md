@@ -6,8 +6,7 @@ ARK Android contains a set of independent component libraries which can be used 
 
 1. Create branch
 ```
-git branch release/<module_name>_<major>.<minor>.<patch>
-git checkout ^
+git checkout -b release/<module_name>_<major>.<minor>.<patch>
 ```
 2. Replace version string manually in module `build.gradle.kts` (`scmVersion.version` always provides "-SNAPSHOT" suffix)
 ```
