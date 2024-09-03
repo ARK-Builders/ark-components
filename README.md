@@ -17,7 +17,6 @@ val libVersion: String = "<major>.<minor>.<patch>"
 ```
 git add <module_name>/build.gradle.kts
 git commit -m "Bump <module_name> to <major>.<minor>.<patch>"
-git push
 ```
 4. Tag commit and push
 ```
