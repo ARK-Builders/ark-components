@@ -19,6 +19,9 @@ jobs:
 
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1.0.5
+
+    - name: Fetch all tags
+      run: git fetch --tags
       
     - name: Publish about to Github
       uses: gradle/gradle-build-action@v2
