@@ -22,6 +22,9 @@ jobs:
 
     - name: Fetch all tags
       run: git fetch --tags
+
+    - name: Check current version
+      run: ./gradlew currentVersion
       
     - name: Publish about to Github
       uses: gradle/gradle-build-action@v2
