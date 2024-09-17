@@ -46,6 +46,10 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     splits {
@@ -72,11 +76,16 @@ android {
 dependencies {
     implementation(project(":filepicker"))
     implementation(project(":about"))
+    implementation(project(":scorewidget"))
 
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
     implementation(libraries.arklib)
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(libraries.androidx.appcompat)
     implementation(libraries.android.material)
+    implementation(libraries.orbit.mvi.viewmodel)
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)
