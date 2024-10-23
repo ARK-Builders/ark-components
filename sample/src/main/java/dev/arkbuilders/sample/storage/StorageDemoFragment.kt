@@ -14,12 +14,10 @@ import dev.arkbuilders.arklib.binding.BindingIndex
 import dev.arkbuilders.arklib.data.storage.FileStorage
 import dev.arkbuilders.arklib.user.score.RootScoreStorage
 import dev.arkbuilders.arklib.user.score.Score
-import dev.arkbuilders.arklib.user.tags.RootTagsStorage
-import dev.arkbuilders.arklib.user.tags.Tags
 import dev.arkbuilders.sample.R
 import dev.arkbuilders.sample.databinding.StorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -55,6 +53,9 @@ class StorageDemoFragment : DialogFragment() {
                 EditScoreDialog(root = Path(rootDir!!), onDone = { id, score ->
                     storage.setValue(id, score)
                     refreshScoreMap()
+                    runBlocking {
+                        storage.persist() // TODO: FIND OUT WHY IT IS NOT PERSISTING ON DISK
+                    }
                 }).show(parentFragmentManager, null)
             }
         }
@@ -103,7 +104,6 @@ class StorageDemoFragment : DialogFragment() {
                     for (entry in rootResources) {
                         val path = entry.value
                         val resourceId = entry.key
-                        println("${storage.getValue(resourceId)}")
                         if (file.absolutePath == path.absolutePathString()) {
                             score = storage.getValue(resourceId)
                             break
