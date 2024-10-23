@@ -4,38 +4,30 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
+import dev.arkbuilders.arklib.binding.BindingIndex
+import dev.arkbuilders.arklib.data.storage.FileStorage
+import dev.arkbuilders.arklib.user.score.RootScoreStorage
+import dev.arkbuilders.arklib.user.score.Score
+import dev.arkbuilders.arklib.user.tags.RootTagsStorage
+import dev.arkbuilders.arklib.user.tags.Tags
 import dev.arkbuilders.sample.R
-import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
+import dev.arkbuilders.sample.databinding.StorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
-class StorageDemoFragment: DialogFragment() {
-
-    private val TAG = StorageDemoFragment::class.java.name
-
-    private lateinit var binding: FragmentStorageDemoBinding
-    private val map by lazy { mutableMapOf<String, String>() }
-    private var workingDir: String = "/"
-
-    private val selectDirRequest = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        uri?.let {
-            // call this to persist permission across device reboots
-            context?.contentResolver?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            workingDir = uri.getAbsolutePath()
-            refreshFilesTree()
-        }
-    }
-
-    private fun getCurrentAbsolutePath(): String {
-        return workingDir + "/" + binding.edtStoragePath.text.toString()
-    }
+class StorageDemoFragment : DialogFragment() {
+    private var rootDir: String? = null;
+    private lateinit var storage: FileStorage<Score>
+    private lateinit var binding: StorageDemoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setStyle(STYLE_NORMAL, R.style.Theme_ArkComponents)
@@ -44,76 +36,86 @@ class StorageDemoFragment: DialogFragment() {
 
     @SuppressLint("UseGetLayoutInflater")
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val layoutInflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
-        binding = FragmentStorageDemoBinding.inflate(layoutInflater ?: LayoutInflater.from(context))
-        initViews(binding)
+        val layoutInflater =
+            context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
+        binding = StorageDemoBinding.inflate(layoutInflater ?: LayoutInflater.from(context))
+        initViews()
         return binding.root
     }
 
-    private fun initViews(binding: FragmentStorageDemoBinding) {
-        binding.btnWorkingDir.setOnClickListener {
-            selectDirRequest.launch(null)
+    private fun initViews() {
+        binding.btnRootDir.setOnClickListener {
+            selectRootDir.launch(null)
         }
 
-        binding.edtStoragePath.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                refreshFilesTree()
-                return@setOnEditorActionListener true
+        binding.btnEditScore.setOnClickListener {
+            if (this.rootDir != null) {
+                EditScoreDialog(root = Path(rootDir!!), onDone = { id, score ->
+                    storage.setValue(id, score)
+                    refreshScoreMap()
+                }).show(parentFragmentManager, null)
             }
-            false
-        }
-
-        binding.btnNewMapEntry.setOnClickListener {
-            MapEntryDialog(isDelete = false, onDone = { key, value ->
-                map[key] = value ?: ""
-                refreshMap()
-            }).show(parentFragmentManager, MapEntryDialog::class.java.name)
-        }
-
-        binding.btnDeleteEntry.setOnClickListener {
-            MapEntryDialog(isDelete = true, onDone = { key, value ->
-                map.remove(key)
-                refreshMap()
-            }).show(parentFragmentManager, MapEntryDialog::class.java.name)
-        }
-
-        binding.btnClearMap.setOnClickListener {
-            map.clear()
-            refreshMap()
         }
     }
+
+    private val selectRootDir =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+            uri?.let {
+                // call this to persist permission across device reboots
+                context?.contentResolver?.takePersistableUriPermission(
+                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                rootDir = uri.getAbsolutePath()
+                storage = RootScoreStorage(root = Path(rootDir!!), scope = lifecycleScope)
+                refreshScoreMap()
+                refreshFilesTree()
+            }
+        }
 
     private fun refreshFilesTree() {
-        val currentAbsolutePath = getCurrentAbsolutePath()
-        binding.tvCurrentAbsolutePath.text = currentAbsolutePath
-
+        binding.tvRootDirPath.text = rootDir
         try {
-            val currentDir = File(currentAbsolutePath)
-            currentDir.mkdirs()
+            val currentDir = File(rootDir!!)
             val listFiles = currentDir.listFiles() ?: return
-            val fileTreeBuilder = StringBuilder()
+            val resultBuilder = StringBuilder()
             for (file in listFiles) {
-                fileTreeBuilder.append(file.name).append("\n")
+                if (file.isFile) { // hiding subdirectories
+                    resultBuilder.append(file.name).append("\n")
+                }
             }
-            binding.tvCurrentFileTree.text = fileTreeBuilder.toString()
+            binding.tvRootDirFileTree.text = resultBuilder.toString()
         } catch (e: Exception) {
-            Log.e(TAG, e.message.toString())
+            // pass
         }
     }
 
-    private fun refreshMap() {
-        if (map.isEmpty()) {
-            binding.tvMapValues.text = getString(R.string.empty_map)
-            return
+    private fun refreshScoreMap() {
+        try {
+            val resultBuilder = StringBuilder()
+            val rootResources = BindingIndex.id2path(Path(rootDir!!))
+            val currentDir = File(rootDir!!)
+            val listFiles = currentDir.listFiles() ?: return
+            for (file in listFiles) {
+                if (file.isFile) { // hiding subdirectories
+                    var score = 0
+                    for (entry in rootResources) {
+                        val path = entry.value
+                        val resourceId = entry.key
+                        println("${storage.getValue(resourceId)}")
+                        if (file.absolutePath == path.absolutePathString()) {
+                            score = storage.getValue(resourceId)
+                            break
+                        }
+                    }
+                    resultBuilder.append(file.name).append("-> $score").append('\n')
+                }
+            }
+            binding.tvScoreMap.text = resultBuilder.toString()
+        } catch (e: Exception) {
+            // pass
         }
-        val mapEntries = StringBuilder()
-        for (entry in map) {
-            mapEntries.append(entry.key).append(" -> ").append(entry.value).append("\n")
-        }
-        binding.tvMapValues.text = mapEntries.toString()
     }
+
 }
