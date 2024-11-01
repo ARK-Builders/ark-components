@@ -80,4 +80,11 @@ dependencies {
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)
+    runtimeOnly(
+        fileTree(
+            mapOf(
+                "dir" to "src/main/jniLibs",
+            )
+        )
+    )
 }
