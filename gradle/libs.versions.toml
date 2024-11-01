@@ -28,6 +28,7 @@ fastadapter = { group = "com.mikepenz", name = "fastadapter", version.ref = "fas
 fastadapter-extensions-binding = { group = "com.mikepenz", name = "fastadapter-extensions-binding", version.ref = "fastadapter" }
 fastadapter-extensions-diff = { group = "com.mikepenz", name = "fastadapter-extensions-diff", version.ref = "fastadapter" }
 arklib = { group = "dev.arkbuilders", name = "arklib", version.ref = "arkLib" }
+core = {group = "dev.arkbuilders.core", name = "lib", version = "1.0-SNAPSHOT"}
 orbit-mvi-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbitMvi" }
 viewbinding-property-delegate = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-noreflection", version.ref = "viewbindingPropertyDelegate" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidXCore" }
