@@ -30,11 +30,15 @@ jobs:
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1.0.5
 
-
     - name: Decrypt the keystore for signing
       run: |
         echo "${{ secrets.KEYSTORE_ENCRYPTED }}" > keystore.asc
         gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch keystore.asc > keystore.jks
+
+    - name: Download and extract `ark-core` JNI libs
+      run: |
+        wget https://github.com/ARK-Builders/ark-core/releases/download/v1.0.0/jniLibs.zip
+        unzip -d sample/src/main jniLibs.zip
 
     - name: Build release sample APK
       run: ./gradlew sample:assembleRelease

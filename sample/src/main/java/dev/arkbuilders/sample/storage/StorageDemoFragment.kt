@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import dev.arkbuilders.core.FileStorage
 import dev.arkbuilders.sample.R
 import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
@@ -21,8 +22,8 @@ class StorageDemoFragment: DialogFragment() {
     private val TAG = StorageDemoFragment::class.java.name
 
     private lateinit var binding: FragmentStorageDemoBinding
-    private val map by lazy { mutableMapOf<String, String>() }
     private var workingDir: String = "/"
+    private var storage: FileStorage? = null
 
     private val selectDirRequest = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         uri?.let {
@@ -61,7 +62,10 @@ class StorageDemoFragment: DialogFragment() {
 
         binding.edtStoragePath.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                refreshFilesTree()
+                val relativeStoragePath = v.text
+                storage = FileStorage(relativeStoragePath.toString(),
+                    "$workingDir/$relativeStoragePath"
+                )
                 return@setOnEditorActionListener true
             }
             false
@@ -69,21 +73,27 @@ class StorageDemoFragment: DialogFragment() {
 
         binding.btnNewMapEntry.setOnClickListener {
             MapEntryDialog(isDelete = false, onDone = { key, value ->
-                map[key] = value ?: ""
-                refreshMap()
+                if (storage != null) {
+                    storage!!.set(key, value)
+                }
+                refreshStorage()
             }).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
         binding.btnDeleteEntry.setOnClickListener {
-            MapEntryDialog(isDelete = true, onDone = { key, value ->
-                map.remove(key)
-                refreshMap()
+            MapEntryDialog(isDelete = true, onDone = { key, _ ->
+                if (storage != null) {
+                    storage!!.remove(key)
+                }
+                refreshStorage()
             }).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
         binding.btnClearMap.setOnClickListener {
-            map.clear()
-            refreshMap()
+            if (storage != null) {
+                storage!!.erase()
+            }
+            refreshStorage()
         }
     }
 
@@ -105,13 +115,14 @@ class StorageDemoFragment: DialogFragment() {
         }
     }
 
-    private fun refreshMap() {
-        if (map.isEmpty()) {
+    private fun refreshStorage() {
+        if (storage == null) {
             binding.tvMapValues.text = getString(R.string.empty_map)
             return
         }
+        storage!!.writeFS()
         val mapEntries = StringBuilder()
-        for (entry in map) {
+        for (entry in storage!!) {
             mapEntries.append(entry.key).append(" -> ").append(entry.value).append("\n")
         }
         binding.tvMapValues.text = mapEntries.toString()
