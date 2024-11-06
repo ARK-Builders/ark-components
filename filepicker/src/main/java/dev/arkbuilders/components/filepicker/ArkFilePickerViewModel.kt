@@ -14,6 +14,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import dev.arkbuilders.arklib.data.folders.FoldersRepo
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.listChildren
+import dev.arkbuilders.components.utils.hasNestedOrParentalRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
@@ -192,10 +193,7 @@ internal class ArkFilePickerViewModel(
         val root = roots.find { root -> file.startsWith(root) }
         val favorites = rootsWithFavorites[root]?.flatten()
 
-        val hasNestedRoot = roots.contains(file)
-                || (roots.indexOfFirst { path ->
-                    val index = path.toString().indexOf(file.toString())
-                    (index >= 0) && (path.toString()[index] == '/') } >= 0)
+        val hasNestedRoot = file.hasNestedOrParentalRoot(roots)
 
         if (hasNestedRoot) {
             postSideEffect(FilePickerSideEffect.NestedRootProhibited)
