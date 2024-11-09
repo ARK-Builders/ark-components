@@ -72,6 +72,7 @@ android {
 dependencies {
     implementation(project(":filepicker"))
     implementation(project(":about"))
+    implementation(project(":canvas"))
 
     implementation(libraries.arklib)
     implementation("androidx.core:core-ktx:1.12.0")
