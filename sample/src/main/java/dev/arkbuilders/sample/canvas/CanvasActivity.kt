@@ -7,7 +7,6 @@ import dev.arkbuilders.canvas.presentation.ArkCanvasFragment
 import dev.arkbuilders.sample.R
 
 class CanvasActivity : AppCompatActivity() {
-    @SuppressLint("CommitTransaction")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_canvas)

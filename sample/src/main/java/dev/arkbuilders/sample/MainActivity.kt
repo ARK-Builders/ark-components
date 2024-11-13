@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AboutActivity::class.java)
             startActivity(intent)
         }
-        findViewById<MaterialButton>(R.id.btn_open_file_mode).setOnClickListener {
+        findViewById<MaterialButton>(R.id.btn_canvas).setOnClickListener {
             val intent = Intent(this, CanvasActivity::class.java)
             startActivity(intent)
         }
