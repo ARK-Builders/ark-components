@@ -99,6 +99,7 @@ class EditViewModel(
     }
 
     init {
+//        setPaths()
         if (imageUri == null && imagePath == null) {
             viewModelScope.launch {
                 editManager.initDefaults(
@@ -121,29 +122,28 @@ class EditViewModel(
 
             editManager.setPaintColor(color)
         }
-        setPaths()
     }
 
-//    fun loadImage() {
-//        isLoaded = true
-//        imagePath?.let {
-//            loadImageWithPath(
-//                DIManager.component.app(),
-//                imagePath,
-//                editManager
-//            )
-//            return
-//        }
-//        imageUri?.let {
-//            loadImageWithUri(
-//                DIManager.component.app(),
-//                imageUri,
-//                editManager
-//            )
-//            return
-//        }
-//        editManager.scaleToFit()
-//    }
+    fun loadImage(context: Context) {
+        isLoaded = true
+        imagePath?.let {
+            loadImageWithPath(
+                context,
+                imagePath,
+                editManager
+            )
+            return
+        }
+        imageUri?.let {
+            loadImageWithUri(
+                context,
+                imageUri,
+                editManager
+            )
+            return
+        }
+        editManager.scaleToFit()
+    }
 
     fun saveImage(context: Context, path: Path) {
         viewModelScope.launch(Dispatchers.IO) {

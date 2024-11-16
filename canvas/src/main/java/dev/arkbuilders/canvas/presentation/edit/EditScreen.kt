@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.arkbuilders.canvas.R
 import dev.arkbuilders.canvas.presentation.data.Resolution
 import dev.arkbuilders.canvas.presentation.drawing.EditCanvas
@@ -79,7 +78,6 @@ import dev.arkbuilders.canvas.presentation.utils.getActivity
 import dev.arkbuilders.canvas.presentation.utils.isWritePermGranted
 import java.nio.file.Path
 
-private const val isChangedForMemoIntegration = true
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun EditScreen(
@@ -92,8 +90,6 @@ fun EditScreen(
     onSaveSvg: () -> Unit,
     viewModel: EditViewModel,
 ) {
-    val primaryColor = MaterialTheme.colors.primary.value.toLong()
-
     val context = LocalContext.current
     val showDefaultsDialog = remember {
         mutableStateOf(
@@ -127,7 +123,6 @@ fun EditScreen(
             viewModel.isLoaded = false
         },
         launchedFromIntent = launchedFromIntent,
-        onSaveSvg = onSaveSvg
     )
 
     BackHandler {
@@ -279,6 +274,8 @@ private fun Menus(
 private fun DrawContainer(
     viewModel: EditViewModel
 ) {
+
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(bottom = 32.dp)
@@ -328,9 +325,7 @@ private fun DrawContainer(
                                 return@onSizeChanged
                             }
 
-                            isZoomMode.value -> {
-                                return@onSizeChanged
-                            }
+                            isZoomMode.value -> { return@onSizeChanged }
 
                             else -> {
                                 scaleToFit()
@@ -339,7 +334,7 @@ private fun DrawContainer(
                         }
                     }
                 }
-//                viewModel.loadImage()
+                viewModel.loadImage(context)
             },
         contentAlignment = Alignment.Center
     ) {
@@ -438,16 +433,12 @@ private fun BoxScope.TopMenu(
                     if (
                         !viewModel.editManager.canUndo.value
                     ) {
-                        if (isChangedForMemoIntegration) {
-                            navigateBack()
+                        if (launchedFromIntent) {
+                            context
+                                .getActivity()
+                                ?.finish()
                         } else {
-                            if (launchedFromIntent) {
-                                context
-                                    .getActivity()
-                                    ?.finish()
-                            } else {
-                                navigateBack()
-                            }
+                            navigateBack()
                         }
                     } else {
                         viewModel.showExitDialog = true
@@ -630,12 +621,12 @@ private fun EditMenuContent(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_undo),
                 tint = if (
                     editManager.canUndo.value && (
-                        !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
-                        )
+                            !editManager.isRotateMode.value &&
+                                    !editManager.isResizeMode.value &&
+                                    !editManager.isCropMode.value &&
+                                    !editManager.isEyeDropperMode.value &&
+                                    !editManager.isBlurMode.value
+                            )
                 ) MaterialTheme.colors.primary else Color.Black,
                 contentDescription = null
             )
@@ -657,12 +648,12 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.canRedo.value &&
                     (
-                        !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
-                        )
+                            !editManager.isRotateMode.value &&
+                                    !editManager.isResizeMode.value &&
+                                    !editManager.isCropMode.value &&
+                                    !editManager.isEyeDropperMode.value &&
+                                    !editManager.isBlurMode.value
+                            )
                 ) MaterialTheme.colors.primary else Color.Black,
                 contentDescription = null
             )
@@ -718,8 +709,7 @@ private fun EditMenuContent(
                             viewModel.strokeSliderExpanded =
                                 !viewModel.strokeSliderExpanded
                     },
-                imageVector =
-                ImageVector.vectorResource(R.drawable.ic_line_weight),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_line_weight),
                 tint = if (
                     !editManager.isRotateMode.value &&
                     !editManager.isResizeMode.value &&
@@ -1017,8 +1007,7 @@ private fun HandleImageSavedEffect(
 private fun ExitDialog(
     viewModel: EditViewModel,
     navigateBack: () -> Unit,
-    launchedFromIntent: Boolean,
-    onSaveSvg: () -> Unit = {}
+    launchedFromIntent: Boolean
 ) {
     if (!viewModel.showExitDialog) return
 
@@ -1038,9 +1027,6 @@ private fun ExitDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (isChangedForMemoIntegration) {
-                        onSaveSvg()
-                    }
                     viewModel.showExitDialog = false
                     viewModel.showSavePathDialog = true
                 }
@@ -1052,14 +1038,10 @@ private fun ExitDialog(
             TextButton(
                 onClick = {
                     viewModel.showExitDialog = false
-                    if (isChangedForMemoIntegration) {
-                        navigateBack()
+                    if (launchedFromIntent) {
+                        context.getActivity()?.finish()
                     } else {
-                        if (launchedFromIntent) {
-                            context.getActivity()?.finish()
-                        } else {
-                            navigateBack()
-                        }
+                        navigateBack()
                     }
                 }
             ) {
