@@ -1,7 +1,5 @@
 package dev.arkbuilders.canvas.presentation.graphics
 
-import dev.arkbuilders.canvas.presentation.graphics.ColorCode
-
 enum class Color(val code: Int, val value: String) {
 
     BLACK(ColorCode.black, "black"),

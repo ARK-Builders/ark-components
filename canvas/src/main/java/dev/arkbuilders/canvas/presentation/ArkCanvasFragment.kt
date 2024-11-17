@@ -12,8 +12,11 @@ import androidx.fragment.app.Fragment
 import dev.arkbuilders.canvas.R
 import dev.arkbuilders.canvas.presentation.data.Preferences
 import dev.arkbuilders.canvas.presentation.data.Resolution
+import dev.arkbuilders.canvas.presentation.drawing.EditManager
 import dev.arkbuilders.canvas.presentation.edit.EditScreen
 import dev.arkbuilders.canvas.presentation.edit.EditViewModel
+import dev.arkbuilders.canvas.presentation.resourceloader.BitmapResourceManager
+import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
 
 private const val imagePath = "image_path_param"
 
@@ -23,20 +26,27 @@ class ArkCanvasFragment : Fragment() {
     lateinit var prefs: Preferences
 
     lateinit var viewModel: EditViewModel
+    lateinit var canvasResourceManager: CanvasResourceManager
+    lateinit var editManager: EditManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             imagePathParam = it.getString(imagePath)
         }
-        prefs = Preferences(appCtx = requireActivity().applicationContext)
+        val context = requireActivity().applicationContext
+        prefs = Preferences(appCtx = context)
+        editManager = EditManager()
+        canvasResourceManager = BitmapResourceManager(context = context, editManager = editManager)
         viewModel = EditViewModel(
-            primaryColor = 0,
+            primaryColor = 0xFF101828,
             launchedFromIntent = false,
             imagePath = null,
             imageUri = null,
             maxResolution = Resolution(350, 720),
             prefs = prefs,
+            editManager = editManager,
+            canvasResourceManager = canvasResourceManager,
         )
     }
 
