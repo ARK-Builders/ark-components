@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.view.MotionEvent
 import androidx.compose.runtime.getValue
@@ -26,21 +25,18 @@ import androidx.compose.ui.unit.toSize
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dev.arkbuilders.canvas.presentation.data.Preferences
 import dev.arkbuilders.canvas.presentation.data.Resolution
 import dev.arkbuilders.canvas.presentation.drawing.DrawPath
 import dev.arkbuilders.canvas.presentation.drawing.EditManager
 import dev.arkbuilders.canvas.presentation.graphics.SVG
+import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,7 +44,6 @@ import timber.log.Timber
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
-import kotlin.io.path.outputStream
 import kotlin.system.measureTimeMillis
 
 class EditViewModel(
@@ -57,10 +52,10 @@ class EditViewModel(
     private val imagePath: Path?,
     private val imageUri: String?,
     private val maxResolution: Resolution,
-    private val prefs: Preferences
+    private val prefs: Preferences,
+     val editManager: EditManager,
+    private val canvasResourceManager: CanvasResourceManager,
 ) : ViewModel() {
-    val editManager = EditManager()
-
     var strokeSliderExpanded by mutableStateOf(false)
     var menusVisible by mutableStateOf(true)
     var strokeWidth by mutableStateOf(5f)
@@ -114,7 +109,7 @@ class EditViewModel(
             val color = if (_usedColors.isNotEmpty()) {
                 _usedColors.last()
             } else {
-                val defaultColor = Color(primaryColor.toULong())
+                val defaultColor = Color.Blue
 
                 _usedColors.add(defaultColor)
                 defaultColor
@@ -148,16 +143,7 @@ class EditViewModel(
     fun saveImage(context: Context, path: Path) {
         viewModelScope.launch(Dispatchers.IO) {
             isSavingImage = true
-            val combinedBitmap = getEditedImage()
-            path.outputStream().use { out ->
-                combinedBitmap.asAndroidBitmap()
-                    .compress(Bitmap.CompressFormat.PNG, 100, out)
-            }
-            MediaScannerConnection.scanFile(
-                context,
-                arrayOf(path.toString()),
-                arrayOf("image/*")
-            ) { _, _ -> }
+            canvasResourceManager.saveResource(path)
             imageSaved = true
             isSavingImage = false
             showSavePathDialog = false
@@ -438,37 +424,6 @@ class EditViewModel(
 
     companion object {
         private const val KEEP_USED_COLORS = 20
-    }
-}
-
-class EditViewModelFactory @AssistedInject constructor(
-    @Assisted private val primaryColor: Long,
-    @Assisted private val launchedFromIntent: Boolean,
-    @Assisted private val imagePath: Path?,
-    @Assisted private val imageUri: String?,
-    @Assisted private val maxResolution: Resolution,
-    private val prefs: Preferences,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EditViewModel(
-            primaryColor,
-            launchedFromIntent,
-            imagePath,
-            imageUri,
-            maxResolution,
-            prefs,
-        ) as T
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(
-            @Assisted primaryColor: Long,
-            @Assisted launchedFromIntent: Boolean,
-            @Assisted imagePath: Path?,
-            @Assisted imageUri: String?,
-            @Assisted maxResolution: Resolution,
-        ): EditViewModelFactory
     }
 }
 
