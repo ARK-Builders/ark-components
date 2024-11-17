@@ -430,7 +430,6 @@ class EditManager {
                 path,
                 currentPaint.copy().apply {
                     strokeWidth = drawPaint.value.strokeWidth
-                    color = Color.Black
                 }
             )
         )
