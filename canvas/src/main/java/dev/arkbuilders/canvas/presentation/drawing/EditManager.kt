@@ -6,9 +6,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
@@ -16,7 +19,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
 import dev.arkbuilders.canvas.presentation.data.ImageDefaults
 import dev.arkbuilders.canvas.presentation.data.Resolution
 import dev.arkbuilders.canvas.presentation.edit.Operation
@@ -26,7 +31,9 @@ import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow
 import dev.arkbuilders.canvas.presentation.edit.draw.DrawOperation
 import dev.arkbuilders.canvas.presentation.edit.resize.ResizeOperation
 import dev.arkbuilders.canvas.presentation.edit.rotate.RotateOperation
+import timber.log.Timber
 import java.util.Stack
+import kotlin.system.measureTimeMillis
 
 class EditManager {
     private val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
@@ -165,6 +172,7 @@ class EditManager {
         operation.apply()
     }
 
+
     private fun undoOperation(operation: Operation) {
         operation.undo()
     }
@@ -255,6 +263,109 @@ class EditManager {
         _backgroundColor.value = Color(defaults.colorValue)
     }
 
+    fun getEditedImage(): ImageBitmap {
+        val size = this.imageSize
+        var bitmap = ImageBitmap(
+            size.width,
+            size.height,
+            ImageBitmapConfig.Argb8888
+        )
+        var pathBitmap: ImageBitmap? = null
+        val time = measureTimeMillis {
+            val matrix = Matrix()
+            if (this.drawPaths.isNotEmpty()) {
+                pathBitmap = ImageBitmap(
+                    size.width,
+                    size.height,
+                    ImageBitmapConfig.Argb8888
+                )
+                val pathCanvas = Canvas(pathBitmap!!)
+                this.drawPaths.forEach {
+                    pathCanvas.drawPath(it.path, it.paint)
+                }
+            }
+            backgroundImage.value?.let {
+                val canvas = Canvas(bitmap)
+                if (prevRotationAngle == 0f && drawPaths.isEmpty()) {
+                    bitmap = it
+                    return@let
+                }
+                if (prevRotationAngle != 0f) {
+                    val centerX = size.width / 2f
+                    val centerY = size.height / 2f
+                    matrix.setRotate(prevRotationAngle, centerX, centerY)
+                }
+                canvas.nativeCanvas.drawBitmap(
+                    it.asAndroidBitmap(),
+                    matrix,
+                    null
+                )
+                if (drawPaths.isNotEmpty()) {
+                    canvas.nativeCanvas.drawBitmap(
+                        pathBitmap?.asAndroidBitmap()!!,
+                        matrix,
+                        null
+                    )
+                }
+            } ?: run {
+                val canvas = Canvas(bitmap)
+                if (prevRotationAngle != 0f) {
+                    val centerX = size.width / 2
+                    val centerY = size.height / 2
+                    matrix.setRotate(
+                        prevRotationAngle,
+                        centerX.toFloat(),
+                        centerY.toFloat()
+                    )
+                    canvas.nativeCanvas.setMatrix(matrix)
+                }
+                canvas.drawRect(
+                    Rect(Offset.Zero, size.toSize()),
+                    backgroundPaint
+                )
+                if (drawPaths.isNotEmpty()) {
+                    canvas.drawImage(
+                        pathBitmap!!,
+                        Offset.Zero,
+                        Paint()
+                    )
+                }
+            }
+
+        }
+        Timber.tag("edit-viewmodel: getEditedImage").d(
+            "processing edits took ${time / 1000} s ${time % 1000} ms"
+        )
+        return bitmap
+    }
+
+    fun enterCropMode() {
+        toggleCropMode()
+        if (_isCropMode.value) {
+            val bitmap = getEditedImage()
+            setBackgroundImage2()
+            backgroundImage.value = bitmap
+            this.cropWindow.init(
+                bitmap.asAndroidBitmap()
+            )
+            return
+        }
+        cancelCropMode()
+        scaleToFit()
+        cropWindow.close()
+    }
+
+    fun enterRotateMode() {
+        toggleRotateMode()
+        if (isRotateMode.value) {
+            setBackgroundImage2()
+            scaleToFitOnEdit()
+            return
+        }
+        cancelRotateMode()
+        scaleToFit()
+    }
+
     fun updateAvailableDrawAreaByMatrix() {
         val drawArea = backgroundImage.value?.let {
             val drawWidth = it.width * matrixScale.value
@@ -273,6 +384,7 @@ class EditManager {
         }
         updateAvailableDrawArea(drawArea)
     }
+
     fun updateAvailableDrawArea(bitmap: ImageBitmap? = backgroundImage.value) {
         if (bitmap == null) {
             resolution.value?.let {
@@ -285,6 +397,7 @@ class EditManager {
             bitmap.height
         )
     }
+
     fun updateAvailableDrawArea(area: IntSize) {
         availableDrawAreaSize.value = area
     }
@@ -391,6 +504,41 @@ class EditManager {
         BLUR -> blurOperation
         else -> drawOperation
     }
+
+    fun isEligibleForUndoOrRedo(): Boolean = (
+            !_isRotateMode.value &&
+                    !_isResizeMode.value &&
+                    !_isCropMode.value &&
+                    !_isEyeDropperMode.value &&
+                    !_isBlurMode.value
+            )
+
+    fun isEligibleForCropOrRotate(): Boolean {
+        return (
+                !_isCropMode.value &&
+                        !_isResizeMode.value &&
+                        !_isEyeDropperMode.value &&
+                        !_isEraseMode.value &&
+                        !_isBlurMode.value
+                )
+    }
+
+    fun isEligibleForStrokeExpandOrErase(): Boolean = (
+            !_isRotateMode.value &&
+                    !_isCropMode.value &&
+                    !_isResizeMode.value &&
+                    !_isEyeDropperMode.value &&
+                    !_isBlurMode.value
+            )
+
+    fun isEligibleForPanOrZoomMode(): Boolean = (
+            !_isRotateMode.value &&
+                    !_isResizeMode.value &&
+                    !_isCropMode.value &&
+                    !_isEyeDropperMode.value &&
+                    !_isBlurMode.value &&
+                    !_isEraseMode.value
+            )
 
     fun undo() {
         if (canUndo.value) {
@@ -555,6 +703,7 @@ class EditManager {
     fun toggleBlurMode() {
         _isBlurMode.value = !isBlurMode.value
     }
+
     fun setPaintStrokeWidth(strokeWidth: Float) {
         drawPaint.value.strokeWidth = strokeWidth
     }
@@ -663,6 +812,7 @@ class EditManager {
             )
         )
     }
+
     class ImageViewParams(
         val drawArea: IntSize,
         val scale: ResizeOperation.Scale

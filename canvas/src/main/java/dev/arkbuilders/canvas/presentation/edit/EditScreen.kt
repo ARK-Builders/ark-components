@@ -325,7 +325,9 @@ private fun DrawContainer(
                                 return@onSizeChanged
                             }
 
-                            isZoomMode.value -> { return@onSizeChanged }
+                            isZoomMode.value -> {
+                                return@onSizeChanged
+                            }
 
                             else -> {
                                 scaleToFit()
@@ -609,24 +611,14 @@ private fun EditMenuContent(
                     .clip(CircleShape)
                     .clickable {
                         if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
+                            editManager.isEligibleForUndoOrRedo()
                         ) {
                             editManager.undo()
                         }
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_undo),
                 tint = if (
-                    editManager.canUndo.value && (
-                            !editManager.isRotateMode.value &&
-                                    !editManager.isResizeMode.value &&
-                                    !editManager.isCropMode.value &&
-                                    !editManager.isEyeDropperMode.value &&
-                                    !editManager.isBlurMode.value
-                            )
+                    editManager.canUndo.value && (editManager.isEligibleForUndoOrRedo())
                 ) MaterialTheme.colors.primary else Color.Black,
                 contentDescription = null
             )
@@ -636,24 +628,12 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
-                        ) editManager.redo()
+                        if (editManager.isEligibleForUndoOrRedo()) editManager.redo()
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_redo),
                 tint = if (
                     editManager.canRedo.value &&
-                    (
-                            !editManager.isRotateMode.value &&
-                                    !editManager.isResizeMode.value &&
-                                    !editManager.isCropMode.value &&
-                                    !editManager.isEyeDropperMode.value &&
-                                    !editManager.isBlurMode.value
-                            )
+                    (editManager.isEligibleForUndoOrRedo())
                 ) MaterialTheme.colors.primary else Color.Black,
                 contentDescription = null
             )
@@ -699,15 +679,8 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
-                        )
-                            viewModel.strokeSliderExpanded =
-                                !viewModel.strokeSliderExpanded
+                        if (editManager.isEligibleForStrokeExpandOrErase())
+                            viewModel.strokeSliderExpanded = !viewModel.strokeSliderExpanded
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_line_weight),
                 tint = if (
@@ -726,13 +699,7 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value
-                        )
+                        if (editManager.isEligibleForStrokeExpandOrErase())
                             editManager.toggleEraseMode()
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_eraser),
@@ -750,15 +717,7 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value &&
-                            !editManager.isEraseMode.value
-                        )
-                            editManager.toggleZoomMode()
+                        if (editManager.isEligibleForPanOrZoomMode()) editManager.toggleZoomMode()
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_zoom_in),
                 tint = if (
@@ -775,15 +734,7 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEyeDropperMode.value &&
-                            !editManager.isBlurMode.value &&
-                            !editManager.isEraseMode.value
-                        )
-                            editManager.togglePanMode()
+                        if (editManager.isEligibleForPanOrZoomMode()) editManager.togglePanMode()
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_pan_tool),
                 tint = if (
@@ -800,31 +751,9 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        editManager.apply {
-                            if (
-                                !isRotateMode.value &&
-                                !isResizeMode.value &&
-                                !isEyeDropperMode.value &&
-                                !isEraseMode.value &&
-                                !isBlurMode.value
-                            ) {
-                                toggleCropMode()
-                                viewModel.menusVisible =
-                                    !editManager.isCropMode.value
-                                if (isCropMode.value) {
-                                    val bitmap = viewModel.getEditedImage()
-                                    setBackgroundImage2()
-                                    backgroundImage.value = bitmap
-                                    viewModel.editManager.cropWindow.init(
-                                        bitmap.asAndroidBitmap()
-                                    )
-                                    return@clickable
-                                }
-                                editManager.cancelCropMode()
-                                editManager.scaleToFit()
-                                editManager.cropWindow.close()
-                            }
-                        }
+                        if (!editManager.isEligibleForCropOrRotate()) return@clickable
+                        editManager.enterCropMode()
+                        viewModel.menusVisible = !editManager.isCropMode.value
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_crop),
                 tint = if (
@@ -840,26 +769,9 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        editManager.apply {
-                            if (
-                                !isCropMode.value &&
-                                !isResizeMode.value &&
-                                !isEyeDropperMode.value &&
-                                !isEraseMode.value &&
-                                !isBlurMode.value
-                            ) {
-                                toggleRotateMode()
-                                if (isRotateMode.value) {
-                                    setBackgroundImage2()
-                                    viewModel.menusVisible =
-                                        !editManager.isRotateMode.value
-                                    scaleToFitOnEdit()
-                                    return@clickable
-                                }
-                                cancelRotateMode()
-                                scaleToFit()
-                            }
-                        }
+                        if (!editManager.isEligibleForCropOrRotate()) return@clickable
+                        editManager.enterRotateMode()
+                        viewModel.menusVisible = !editManager.isRotateMode.value
                     },
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_rotate_90_degrees_ccw),
