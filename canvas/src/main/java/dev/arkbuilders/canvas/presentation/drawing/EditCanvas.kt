@@ -37,7 +37,9 @@ import dev.arkbuilders.canvas.presentation.edit.EditViewModel
 import dev.arkbuilders.canvas.presentation.edit.TransparencyChessBoardCanvas
 import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow.Companion.computeDeltaX
 import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow.Companion.computeDeltaY
+import dev.arkbuilders.canvas.presentation.graphics.Size
 import dev.arkbuilders.canvas.presentation.picker.toDp
+import dev.arkbuilders.canvas.presentation.utils.SVGCommand
 import dev.arkbuilders.canvas.presentation.utils.calculateRotationFromOneFingerGesture
 
 @Composable
@@ -58,24 +60,26 @@ fun EditCanvas(viewModel: EditViewModel) {
     }
 
     Box(contentAlignment = Alignment.Center) {
-        val modifier = Modifier.size(
-            editManager.availableDrawAreaSize.value.width.toDp(),
-            editManager.availableDrawAreaSize.value.height.toDp()
-        ).graphicsLayer {
-            resetScaleAndTranslate()
+        val modifier = Modifier
+            .size(
+                editManager.availableDrawAreaSize.value.width.toDp(),
+                editManager.availableDrawAreaSize.value.height.toDp()
+            )
+            .graphicsLayer {
+                resetScaleAndTranslate()
 
-            // Eraser leaves black line instead of erasing without this hack, it uses BlendMode.SrcOut
-            // https://stackoverflow.com/questions/65653560/jetpack-compose-applying-porterduffmode-to-image
-            // Provide a slight opacity to for compositing into an
-            // offscreen buffer to ensure blend modes are applied to empty pixel information
-            // By default any alpha != 1.0f will use a compositing layer by default
-            alpha = 0.99f
+                // Eraser leaves black line instead of erasing without this hack, it uses BlendMode.SrcOut
+                // https://stackoverflow.com/questions/65653560/jetpack-compose-applying-porterduffmode-to-image
+                // Provide a slight opacity to for compositing into an
+                // offscreen buffer to ensure blend modes are applied to empty pixel information
+                // By default any alpha != 1.0f will use a compositing layer by default
+                alpha = 0.99f
 
-            scaleX = scale
-            scaleY = scale
-            translationX = offset.x
-            translationY = offset.y
-        }
+                scaleX = scale
+                scaleY = scale
+                translationX = offset.x
+                translationY = offset.y
+            }
         TransparencyChessBoardCanvas(modifier, editManager)
         BackgroundCanvas(modifier, editManager)
         DrawCanvas(modifier, viewModel)
@@ -85,7 +89,8 @@ fun EditCanvas(viewModel: EditViewModel) {
         editManager.isPanMode.value
     ) {
         Canvas(
-            Modifier.fillMaxSize()
+            Modifier
+                .fillMaxSize()
                 .pointerInput(Any()) {
                     forEachGesture {
                         awaitPointerEventScope {
@@ -101,6 +106,7 @@ fun EditCanvas(viewModel: EditViewModel) {
                                         editManager.rotate(angle)
                                         editManager.invalidatorTick.value++
                                     }
+
                                     else -> {
                                         if (editManager.isZoomMode.value) {
                                             scale *= event.calculateZoom()
@@ -175,15 +181,40 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                 editManager.apply {
                     drawOperation.draw(path)
                     applyOperation()
+
+                    svg.apply {
+                        val svgCommand = SVGCommand.MoveTo(eventX, eventY).apply {
+                            //TODO Add color for paint
+                            brushSizeId =  Size.MEDIUM.id
+                        }
+                        addCommand(svgCommand)
+                    }
                 }
+
             }
             MotionEvent.ACTION_MOVE -> {
-                path.quadraticBezierTo(
+                path.quadraticTo(
                     currentPoint.x,
                     currentPoint.y,
                     (eventX + currentPoint.x) / 2,
                     (eventY + currentPoint.y) / 2
                 )
+                editManager.apply {
+                    svg.apply {
+                        addCommand(
+                            SVGCommand.AbsQuadTo(
+                                currentPoint.x,
+                                currentPoint.y,
+                                (eventX + currentPoint.x) / 2,
+                                (eventY + currentPoint.y) / 2
+                            ).apply {
+                                //TODO Add color for paint
+                                brushSizeId =  Size.MEDIUM.id
+
+                            })
+                    }
+                }
+
                 currentPoint.x = eventX
                 currentPoint.y = eventY
             }
@@ -194,13 +225,19 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                 ) {
                     path.lineTo(currentPoint.x, currentPoint.y)
                 }
-
                 editManager.clearRedoPath()
                 editManager.updateRevised()
                 path = Path()
             }
+
             else -> {}
         }
+        editManager.svg.addPath(
+            DrawPath(
+                path = path,
+                paint = editManager.drawPaint.value
+            )
+        )
     }
 
     fun handleCropEvent(action: Int, eventX: Float, eventY: Float) {

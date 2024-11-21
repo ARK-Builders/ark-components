@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.toSize
@@ -33,9 +32,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import dev.arkbuilders.canvas.presentation.data.Preferences
 import dev.arkbuilders.canvas.presentation.data.Resolution
-import dev.arkbuilders.canvas.presentation.drawing.DrawPath
 import dev.arkbuilders.canvas.presentation.drawing.EditManager
-import dev.arkbuilders.canvas.presentation.graphics.SVG
 import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -53,8 +50,9 @@ class EditViewModel(
     private val imageUri: String?,
     private val maxResolution: Resolution,
     private val prefs: Preferences,
-     val editManager: EditManager,
-    private val canvasResourceManager: CanvasResourceManager,
+    val editManager: EditManager,
+    private val bitMapResourceManager: CanvasResourceManager,
+    private val svgResourceManager: CanvasResourceManager,
 ) : ViewModel() {
     var strokeSliderExpanded by mutableStateOf(false)
     var menusVisible by mutableStateOf(true)
@@ -79,22 +77,13 @@ class EditViewModel(
     fun setPaths() {
         viewModelScope.launch {
             editManager.setPaintColor(Color.Blue)
-            val svgpaths = SVG.parse(Path("/storage/emulated/0/Documents/32254-1096105931.svg"))
-            svgpaths.getPaths().forEach {
-                val draw = DrawPath(
-                    path = it.path.asComposePath(),
-                    paint = Paint().apply {
-                        color = Color(it.paint.color)
-                    }
-                )
-                editManager.addDrawPath(draw.path)
-                editManager.setPaintColor(draw.paint.color)
-            }
+            val svgPath = Path("/storage/emulated/0/Documents/love.svg")
+            svgResourceManager.loadResource(svgPath)
         }
     }
 
     init {
-//        setPaths()
+        setPaths()
         if (imageUri == null && imagePath == null) {
             viewModelScope.launch {
                 editManager.initDefaults(
@@ -140,10 +129,10 @@ class EditViewModel(
         editManager.scaleToFit()
     }
 
-    fun saveImage(context: Context, path: Path) {
+    fun saveImage(path: Path) {
         viewModelScope.launch(Dispatchers.IO) {
             isSavingImage = true
-            canvasResourceManager.saveResource(path)
+            svgResourceManager.saveResource(path)
             imageSaved = true
             isSavingImage = false
             showSavePathDialog = false

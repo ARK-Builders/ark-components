@@ -3,18 +3,17 @@ package dev.arkbuilders.canvas.presentation.utils
 import android.graphics.Paint
 import android.util.Log
 import android.util.Xml
+import androidx.compose.ui.graphics.Path as ComposePath
+import androidx.compose.ui.graphics.asComposePaint
+import dev.arkbuilders.canvas.presentation.drawing.DrawPath
 import dev.arkbuilders.canvas.presentation.graphics.Color
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlSerializer
 import java.nio.file.Path
 import kotlin.io.path.reader
 import kotlin.io.path.writer
 import android.graphics.Path as AndroidDrawPath
 
-
-data class DrawPath(
-    val path: android.graphics.Path,
-    val paint: Paint
-)
 
 class SVG {
     private var strokeColor = Color.BLACK.value
@@ -42,7 +41,7 @@ class SVG {
         paths.addLast(path)
     }
 
-    fun generate(path: Path) {
+    fun generate(path: Path): XmlSerializer? {
         if (commands.isNotEmpty()) {
             val xmlSerializer = Xml.newSerializer()
             val pathData = commands.joinToString()
@@ -60,7 +59,9 @@ class SVG {
                 endTag("", SVG_TAG)
                 endDocument()
             }
+           return xmlSerializer
         }
+        return null
     }
 
     fun getPaths(): Collection<DrawPath> = paths
@@ -76,28 +77,34 @@ class SVG {
     private fun createCanvasPaths() {
         if (commands.isNotEmpty()) {
             if (paths.isNotEmpty()) paths.clear()
-            var path = AndroidDrawPath()
+            var path = ComposePath()
             commands.forEach { command ->
                 strokeColor = command.paintColor
                 strokeSize = command.brushSizeId
                 when (command) {
                     is SVGCommand.MoveTo -> {
-                        path = AndroidDrawPath()
+                        path = ComposePath()
                         path.moveTo(command.x, command.y)
                     }
 
                     is SVGCommand.AbsQuadTo -> {
-                        path.quadTo(command.x1, command.y1, command.x2, command.y2)
+                        path.quadraticTo(command.x1, command.y1, command.x2, command.y2)
                     }
 
                     is SVGCommand.AbsLineTo -> {
                         path.lineTo(command.x, command.y)
                     }
                 }
-                paths.addLast(DrawPath(path, paint.apply {
-                    color = strokeColor.getColorCode()
-                    strokeWidth = strokeSize.getStrokeSize()
-                }))
+
+                paths.addLast(
+                    DrawPath(
+                        path = path,
+                        paint = paint.apply {
+                            color = Color.BLACK.code
+                            strokeWidth = 3f
+                        }.asComposePaint()
+                    )
+                )
             }
         }
     }
@@ -122,6 +129,7 @@ class SVG {
                                         getAttributeValue("", Attributes.VIEW_BOX)
                                     )
                                 }
+
                                 PATH_TAG -> {
                                     pathCount += 1
                                     strokeColor = getAttributeValue("", Attributes.Path.STROKE)
@@ -156,6 +164,7 @@ class SVG {
                                 brushSizeId = strokeSize
                             })
                         }
+
                         SVGCommand.AbsLineTo.CODE -> {
                             if (commandElements.size > 3) {
                                 strokeColor = commandElements[3]
@@ -168,6 +177,7 @@ class SVG {
                                 brushSizeId = strokeSize
                             })
                         }
+
                         SVGCommand.AbsQuadTo.CODE -> {
                             if (commandElements.size > 5) {
                                 strokeColor = commandElements[5]
@@ -180,6 +190,7 @@ class SVG {
                                 brushSizeId = strokeSize
                             })
                         }
+
                         else -> {}
                     }
                 }
@@ -241,7 +252,8 @@ sealed class SVGCommand {
                 val x = params[0].toFloat()
                 val y = params[1].toFloat()
                 val colorCode = if (params.size > 2) params[2] else Color.BLACK.value
-                val strokeSizeId = if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
+                val strokeSizeId =
+                    if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return MoveTo(x, y).apply {
                     paintColor = colorCode
                     brushSizeId = strokeSizeId
@@ -264,7 +276,8 @@ sealed class SVGCommand {
                 val x = params[0].toFloat()
                 val y = params[1].toFloat()
                 val colorCode = if (params.size > 2) params[2] else Color.BLACK.value
-                val strokeSizeId = if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
+                val strokeSizeId =
+                    if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return AbsLineTo(x, y).apply {
                     paintColor = colorCode
                     brushSizeId = strokeSizeId
@@ -291,7 +304,8 @@ sealed class SVGCommand {
                 val x2 = params[2].toFloat()
                 val y2 = params[3].toFloat()
                 val colorCode = if (params.size > 4) params[4] else Color.BLACK.value
-                val strokeSizeId = if (params.size > 5) params[5].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
+                val strokeSizeId =
+                    if (params.size > 5) params[5].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return AbsQuadTo(x1, y1, x2, y2).apply {
                     paintColor = colorCode
                     brushSizeId = strokeSizeId

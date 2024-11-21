@@ -36,8 +36,6 @@ class BitmapResourceManager(
         .asBitmap()
         .skipMemoryCache(true)
         .diskCacheStrategy(DiskCacheStrategy.NONE)
-
-    private lateinit var bitMapResource: ImageBitmap
     override suspend fun loadResource(path: Path) {
         loadImage(path)
     }

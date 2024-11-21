@@ -17,6 +17,7 @@ import dev.arkbuilders.canvas.presentation.edit.EditScreen
 import dev.arkbuilders.canvas.presentation.edit.EditViewModel
 import dev.arkbuilders.canvas.presentation.resourceloader.BitmapResourceManager
 import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
+import dev.arkbuilders.canvas.presentation.resourceloader.SvgResourceManager
 
 private const val imagePath = "image_path_param"
 
@@ -26,7 +27,9 @@ class ArkCanvasFragment : Fragment() {
     lateinit var prefs: Preferences
 
     lateinit var viewModel: EditViewModel
-    lateinit var canvasResourceManager: CanvasResourceManager
+    lateinit var bitmapResourceManager: CanvasResourceManager
+    lateinit var svgResourceManager: CanvasResourceManager
+
     lateinit var editManager: EditManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +40,8 @@ class ArkCanvasFragment : Fragment() {
         val context = requireActivity().applicationContext
         prefs = Preferences(appCtx = context)
         editManager = EditManager()
-        canvasResourceManager = BitmapResourceManager(context = context, editManager = editManager)
+        bitmapResourceManager = BitmapResourceManager(context = context, editManager = editManager)
+        svgResourceManager = SvgResourceManager(editManager = editManager)
         viewModel = EditViewModel(
             primaryColor = 0xFF101828,
             launchedFromIntent = false,
@@ -46,7 +50,8 @@ class ArkCanvasFragment : Fragment() {
             maxResolution = Resolution(350, 720),
             prefs = prefs,
             editManager = editManager,
-            canvasResourceManager = canvasResourceManager,
+            bitMapResourceManager = bitmapResourceManager,
+            svgResourceManager = svgResourceManager,
         )
     }
 

@@ -31,15 +31,17 @@ import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow
 import dev.arkbuilders.canvas.presentation.edit.draw.DrawOperation
 import dev.arkbuilders.canvas.presentation.edit.resize.ResizeOperation
 import dev.arkbuilders.canvas.presentation.edit.rotate.RotateOperation
+import dev.arkbuilders.canvas.presentation.utils.SVG
 import timber.log.Timber
 import java.util.Stack
 import kotlin.system.measureTimeMillis
 
 class EditManager {
-    private val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
+    val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
 
     private val _paintColor: MutableState<Color> =
         mutableStateOf(drawPaint.value.color)
+    val svg = SVG()
     val paintColor: State<Color> = _paintColor
     private val _backgroundColor = mutableStateOf(Color.Transparent)
     val backgroundColor: State<Color> = _backgroundColor

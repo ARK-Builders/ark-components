@@ -29,13 +29,15 @@ fun Int.getStrokeSize(): Float {
 }
 
 fun Float.getBrushSizeId(): Int {
-    return when(this) {
-        Size.TINY.value -> Size.TINY.id
-        Size.SMALL.value -> Size.SMALL.id
-        Size.MEDIUM.value -> Size.MEDIUM.id
-        Size.LARGE.value -> Size.LARGE.id
-        Size.HUGE.value -> Size.HUGE.id
-        else -> { Size.TINY.id }
+    return when (this) {
+        in 0f..Size.TINY.value -> Size.TINY.id
+        in Size.TINY.value..Size.SMALL.value -> Size.SMALL.id
+        in Size.SMALL.value..Size.MEDIUM.value -> Size.MEDIUM.id
+        in Size.MEDIUM.value..Size.LARGE.value -> Size.LARGE.id
+        in Size.LARGE.value..Size.HUGE.value -> Size.HUGE.id
+        else -> {
+            Size.TINY.id
+        }
     }
 }
 
