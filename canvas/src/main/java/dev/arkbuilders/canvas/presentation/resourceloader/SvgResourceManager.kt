@@ -9,8 +9,8 @@ class SvgResourceManager(
 ): CanvasResourceManager {
 
     override suspend fun loadResource(path: Path) {
-        val svgpaths = SVG.parse(path)
-        svgpaths.getPaths().forEach {draw ->
+        val svgPaths = SVG.parse(path)
+        svgPaths.getPaths().forEach { draw ->
             editManager.addDrawPath(draw.path)
             editManager.setPaintColor(draw.paint.color)
         }
