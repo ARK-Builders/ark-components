@@ -41,6 +41,7 @@ import timber.log.Timber
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.io.path.name
 import kotlin.system.measureTimeMillis
 
 class EditViewModel(
@@ -74,10 +75,10 @@ class EditViewModel(
     private val _usedColors = mutableListOf<Color>()
     val usedColors: List<Color> = _usedColors
 
-    fun setPaths() {
+    private fun setPaths() {
         viewModelScope.launch {
             editManager.setPaintColor(Color.Blue)
-            val svgPath = Path("/storage/emulated/0/Documents/love.svg")
+            val svgPath = Path("/storage/emulated/0/Documents/newcolor.svg")
             svgResourceManager.loadResource(svgPath)
         }
     }
@@ -110,29 +111,17 @@ class EditViewModel(
 
     fun loadImage(context: Context) {
         isLoaded = true
-        imagePath?.let {
-            loadImageWithPath(
-                context,
-                imagePath,
-                editManager
-            )
-            return
-        }
-        imageUri?.let {
-            loadImageWithUri(
-                context,
-                imageUri,
-                editManager
-            )
-            return
-        }
         editManager.scaleToFit()
     }
 
     fun saveImage(path: Path) {
         viewModelScope.launch(Dispatchers.IO) {
             isSavingImage = true
-            svgResourceManager.saveResource(path)
+            if (path.name.endsWith("svg")) {
+                svgResourceManager.saveResource(path)
+            } else {
+                bitMapResourceManager.saveResource(path)
+            }
             imageSaved = true
             isSavingImage = false
             showSavePathDialog = false
@@ -339,50 +328,4 @@ class EditViewModel(
     companion object {
         private const val KEEP_USED_COLORS = 20
     }
-}
-
-private fun loadImageWithPath(
-    context: Context,
-    image: Path,
-    editManager: EditManager
-) {
-    initGlideBuilder(context)
-        .load(image.toFile())
-        .loadInto(editManager)
-}
-
-private fun loadImageWithUri(
-    context: Context,
-    uri: String,
-    editManager: EditManager
-) {
-    initGlideBuilder(context)
-        .load(uri.toUri())
-        .loadInto(editManager)
-}
-
-private fun initGlideBuilder(context: Context) = Glide
-    .with(context)
-    .asBitmap()
-    .skipMemoryCache(true)
-    .diskCacheStrategy(DiskCacheStrategy.NONE)
-
-private fun RequestBuilder<Bitmap>.loadInto(
-    editManager: EditManager
-) {
-    into(object : CustomTarget<Bitmap>() {
-        override fun onResourceReady(
-            bitmap: Bitmap,
-            transition: Transition<in Bitmap>?
-        ) {
-            editManager.apply {
-                val image = bitmap.asImageBitmap()
-                backgroundImage.value = image
-                setOriginalBackgroundImage(image)
-                scaleToFit()
-            }
-        }
-
-        override fun onLoadCleared(placeholder: Drawable?) {}
-    })
 }
