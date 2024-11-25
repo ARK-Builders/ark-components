@@ -1,22 +1,24 @@
 package dev.arkbuilders.canvas.presentation.utils
 
-import android.graphics.Paint
 import android.util.Log
 import android.util.Xml
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.Path as ComposePath
 import androidx.compose.ui.graphics.asComposePaint
 import dev.arkbuilders.canvas.presentation.drawing.DrawPath
-import dev.arkbuilders.canvas.presentation.graphics.Color
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlSerializer
 import java.nio.file.Path
 import kotlin.io.path.reader
 import kotlin.io.path.writer
-import android.graphics.Path as AndroidDrawPath
 
 
 class SVG {
-    private var strokeColor = Color.BLACK.value
+    private var strokeColor: ULong = Color.Black.value
     private var strokeSize: Int = dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
     private var fill = "none"
     private var viewBox = ViewBox()
@@ -25,11 +27,10 @@ class SVG {
 
     private val paint
         get() = Paint().also {
-            it.color = strokeColor.getColorCode()
-            it.style = Paint.Style.STROKE
+            it.style = PaintingStyle.Stroke
             it.strokeWidth = strokeSize.getStrokeSize()
-            it.strokeCap = Paint.Cap.ROUND
-            it.strokeJoin = Paint.Join.ROUND
+            it.strokeCap = StrokeCap.Round
+            it.strokeJoin = StrokeJoin.Round
             it.isAntiAlias = true
         }
 
@@ -52,14 +53,14 @@ class SVG {
                 attribute("", Attributes.VIEW_BOX, viewBox.toString())
                 attribute("", Attributes.XML_NS_URI, XML_NS_URI)
                 startTag("", PATH_TAG)
-                attribute("", Attributes.Path.STROKE, strokeColor)
+                attribute("", Attributes.Path.STROKE, strokeColor.toString())
                 attribute("", Attributes.Path.FILL, fill)
                 attribute("", Attributes.Path.DATA, pathData)
                 endTag("", PATH_TAG)
                 endTag("", SVG_TAG)
                 endDocument()
             }
-           return xmlSerializer
+            return xmlSerializer
         }
         return null
     }
@@ -100,9 +101,9 @@ class SVG {
                     DrawPath(
                         path = path,
                         paint = paint.apply {
-                            color = Color.BLACK.code
+                            color = Color(command.paintColor)
                             strokeWidth = 3f
-                        }.asComposePaint()
+                        }
                     )
                 )
             }
@@ -132,7 +133,7 @@ class SVG {
 
                                 PATH_TAG -> {
                                     pathCount += 1
-                                    strokeColor = getAttributeValue("", Attributes.Path.STROKE)
+                                    strokeColor = getAttributeValue("", Attributes.Path.STROKE).toULong()
                                     fill = getAttributeValue("", Attributes.Path.FILL)
                                     pathData = getAttributeValue("", Attributes.Path.DATA)
                                 }
@@ -154,7 +155,7 @@ class SVG {
                     when (command.first()) {
                         SVGCommand.MoveTo.CODE -> {
                             if (commandElements.size > 3) {
-                                strokeColor = commandElements[3]
+                                strokeColor = commandElements[3].toULong()
                             }
                             if (commandElements.size > 4) {
                                 strokeSize = commandElements[4].toInt()
@@ -167,7 +168,7 @@ class SVG {
 
                         SVGCommand.AbsLineTo.CODE -> {
                             if (commandElements.size > 3) {
-                                strokeColor = commandElements[3]
+                                strokeColor = commandElements[3].toULong()
                             }
                             if (commandElements.size > 4) {
                                 strokeSize = commandElements[4].toInt()
@@ -180,7 +181,7 @@ class SVG {
 
                         SVGCommand.AbsQuadTo.CODE -> {
                             if (commandElements.size > 5) {
-                                strokeColor = commandElements[5]
+                                strokeColor = commandElements[5].toULong()
                             }
                             if (commandElements.size > 6) {
                                 strokeSize = commandElements[6].toInt()
@@ -235,7 +236,7 @@ data class ViewBox(
 
 sealed class SVGCommand {
 
-    var paintColor = Color.BLACK.value
+    var paintColor: ULong = Color.Black.value
     var brushSizeId = dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
 
     class MoveTo(
@@ -251,7 +252,7 @@ sealed class SVGCommand {
                 val params = string.removePrefix("$CODE").trim().split(" ")
                 val x = params[0].toFloat()
                 val y = params[1].toFloat()
-                val colorCode = if (params.size > 2) params[2] else Color.BLACK.value
+                val colorCode = if (params.size > 2) params[2].toULong() else Color.Black.value
                 val strokeSizeId =
                     if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return MoveTo(x, y).apply {
@@ -275,7 +276,7 @@ sealed class SVGCommand {
                 val params = string.removePrefix("$CODE").trim().split(" ")
                 val x = params[0].toFloat()
                 val y = params[1].toFloat()
-                val colorCode = if (params.size > 2) params[2] else Color.BLACK.value
+                val colorCode = if (params.size > 2) params[2].toULong() else Color.Black.value
                 val strokeSizeId =
                     if (params.size > 3) params[3].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return AbsLineTo(x, y).apply {
@@ -303,7 +304,7 @@ sealed class SVGCommand {
                 val y1 = params[1].toFloat()
                 val x2 = params[2].toFloat()
                 val y2 = params[3].toFloat()
-                val colorCode = if (params.size > 4) params[4] else Color.BLACK.value
+                val colorCode = if (params.size > 4) params[4].toULong() else Color.Black.value
                 val strokeSizeId =
                     if (params.size > 5) params[5].toInt() else dev.arkbuilders.canvas.presentation.graphics.Size.TINY.id
                 return AbsQuadTo(x1, y1, x2, y2).apply {

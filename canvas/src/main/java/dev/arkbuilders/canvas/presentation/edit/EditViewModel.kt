@@ -78,7 +78,7 @@ class EditViewModel(
     private fun setPaths() {
         viewModelScope.launch {
             editManager.setPaintColor(Color.Blue)
-            val svgPath = Path("/storage/emulated/0/Documents/newcolor.svg")
+            val svgPath = Path("/storage/emulated/0/Documents/color.svg")
             svgResourceManager.loadResource(svgPath)
         }
     }
@@ -93,20 +93,20 @@ class EditViewModel(
                 )
             }
         }
-        viewModelScope.launch {
-            _usedColors.addAll(prefs.readUsedColors())
-
-            val color = if (_usedColors.isNotEmpty()) {
-                _usedColors.last()
-            } else {
-                val defaultColor = Color.Blue
-
-                _usedColors.add(defaultColor)
-                defaultColor
-            }
-
-            editManager.setPaintColor(color)
-        }
+//        viewModelScope.launch {
+//            _usedColors.addAll(prefs.readUsedColors())
+//
+//            val color = if (_usedColors.isNotEmpty()) {
+//                _usedColors.last()
+//            } else {
+//                val defaultColor = Color.Blue
+//
+//                _usedColors.add(defaultColor)
+//                defaultColor
+//            }
+//
+//            editManager.setPaintColor(color)
+//        }
     }
 
     fun loadImage(context: Context) {

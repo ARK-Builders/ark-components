@@ -185,7 +185,8 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                     svg.apply {
                         val svgCommand = SVGCommand.MoveTo(eventX, eventY).apply {
                             //TODO Add color for paint
-                            brushSizeId =  Size.MEDIUM.id
+                            paintColor = editManager.currentPaint.color.value
+                            brushSizeId = Size.MEDIUM.id
                         }
                         addCommand(svgCommand)
                     }
@@ -208,9 +209,8 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                                 (eventX + currentPoint.x) / 2,
                                 (eventY + currentPoint.y) / 2
                             ).apply {
-                                //TODO Add color for paint
-                                brushSizeId =  Size.MEDIUM.id
-
+                                paintColor = editManager.currentPaint.color.value
+                                brushSizeId = Size.MEDIUM.id
                             })
                     }
                 }
@@ -235,7 +235,7 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
         editManager.svg.addPath(
             DrawPath(
                 path = path,
-                paint = editManager.drawPaint.value
+                paint = editManager.currentPaint
             )
         )
     }

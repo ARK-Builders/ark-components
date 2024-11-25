@@ -37,7 +37,7 @@ import java.util.Stack
 import kotlin.system.measureTimeMillis
 
 class EditManager {
-    val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
+    private val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
 
     private val _paintColor: MutableState<Color> =
         mutableStateOf(drawPaint.value.color)
@@ -72,7 +72,7 @@ class EditManager {
     val cropOperation = CropOperation(this)
     val blurOperation = BlurOperation(this)
 
-    private val currentPaint: Paint
+     val currentPaint: Paint
         get() = when (true) {
             isEraseMode.value -> erasePaint
             else -> drawPaint.value
