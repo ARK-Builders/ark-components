@@ -18,6 +18,7 @@ import dev.arkbuilders.canvas.presentation.edit.EditViewModel
 import dev.arkbuilders.canvas.presentation.resourceloader.BitmapResourceManager
 import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
 import dev.arkbuilders.canvas.presentation.resourceloader.SvgResourceManager
+import kotlin.io.path.Path
 
 private const val imagePath = "image_path_param"
 
@@ -45,7 +46,7 @@ class ArkCanvasFragment : Fragment() {
         viewModel = EditViewModel(
             primaryColor = 0xFF101828,
             launchedFromIntent = false,
-            imagePath = null,
+            imagePath = Path("/storage/emulated/0/Documents/improvement.png"),
             imageUri = null,
             maxResolution = Resolution(350, 720),
             prefs = prefs,

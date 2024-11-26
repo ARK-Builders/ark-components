@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.MotionEvent
 import androidx.compose.runtime.getValue
@@ -18,18 +17,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.toSize
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import dev.arkbuilders.canvas.presentation.data.Preferences
 import dev.arkbuilders.canvas.presentation.data.Resolution
 import dev.arkbuilders.canvas.presentation.drawing.EditManager
@@ -40,7 +32,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.Path
 import kotlin.io.path.name
 import kotlin.system.measureTimeMillis
 
@@ -75,38 +66,51 @@ class EditViewModel(
     private val _usedColors = mutableListOf<Color>()
     val usedColors: List<Color> = _usedColors
 
-    private fun setPaths() {
+    private fun loadResource(path: Path) {
         viewModelScope.launch {
-            editManager.setPaintColor(Color.Blue)
-            val svgPath = Path("/storage/emulated/0/Documents/color.svg")
-            svgResourceManager.loadResource(svgPath)
+            if (path.name.endsWith(".png")) {
+                bitMapResourceManager.loadResource(path)
+            } else {
+                svgResourceManager.loadResource(path)
+            }
+        }
+    }
+
+    private fun loadUsedColors() {
+        viewModelScope.launch {
+            _usedColors.addAll(prefs.readUsedColors())
+
+            val color = if (_usedColors.isNotEmpty()) {
+                _usedColors.last()
+            } else {
+                val defaultColor = Color.Blue
+
+                _usedColors.add(defaultColor)
+                defaultColor
+            }
+
+            editManager.setPaintColor(color)
+        }
+    }
+
+    private fun initDefaults() {
+        viewModelScope.launch {
+            editManager.initDefaults(
+                prefs.readDefaults(),
+                maxResolution
+            )
         }
     }
 
     init {
-        setPaths()
-        if (imageUri == null && imagePath == null) {
-            viewModelScope.launch {
-                editManager.initDefaults(
-                    prefs.readDefaults(),
-                    maxResolution
-                )
-            }
+        imagePath?.let {
+            loadResource(it)
         }
-//        viewModelScope.launch {
-//            _usedColors.addAll(prefs.readUsedColors())
-//
-//            val color = if (_usedColors.isNotEmpty()) {
-//                _usedColors.last()
-//            } else {
-//                val defaultColor = Color.Blue
-//
-//                _usedColors.add(defaultColor)
-//                defaultColor
-//            }
-//
-//            editManager.setPaintColor(color)
-//        }
+        if (imageUri == null && imagePath == null) {
+            initDefaults()
+        }
+        initDefaults()
+        loadUsedColors()
     }
 
     fun loadImage(context: Context) {
