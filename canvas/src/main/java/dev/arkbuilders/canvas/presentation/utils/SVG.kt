@@ -38,6 +38,10 @@ class SVG {
         commands.addLast(command)
     }
 
+    fun getCommands(): ArrayDeque<SVGCommand> {
+        return commands
+    }
+
     fun addPath(path: DrawPath) {
         paths.addLast(path)
     }
@@ -108,6 +112,10 @@ class SVG {
                 )
             }
         }
+    }
+
+    fun addAll(commands: ArrayDeque<SVGCommand>) {
+        commands.addAll(commands)
     }
 
     companion object {

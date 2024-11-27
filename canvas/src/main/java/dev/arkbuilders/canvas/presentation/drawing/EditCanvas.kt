@@ -184,7 +184,6 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
 
                     svg.apply {
                         val svgCommand = SVGCommand.MoveTo(eventX, eventY).apply {
-                            //TODO Add color for paint
                             paintColor = editManager.currentPaint.color.value
                             brushSizeId = Size.MEDIUM.id
                         }

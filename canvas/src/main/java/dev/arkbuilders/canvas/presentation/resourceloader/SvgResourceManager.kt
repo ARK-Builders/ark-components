@@ -14,6 +14,7 @@ class SvgResourceManager(
             editManager.addDrawPath(draw.path)
             editManager.setPaintColor(draw.paint.color)
         }
+        editManager.svg.addAll(svgPaths.getCommands())
     }
 
     override suspend fun saveResource(path: Path) {
