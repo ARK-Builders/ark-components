@@ -18,25 +18,26 @@ import dev.arkbuilders.canvas.presentation.edit.EditViewModel
 import dev.arkbuilders.canvas.presentation.resourceloader.BitmapResourceManager
 import dev.arkbuilders.canvas.presentation.resourceloader.CanvasResourceManager
 import dev.arkbuilders.canvas.presentation.resourceloader.SvgResourceManager
+import java.nio.file.Path
 import kotlin.io.path.Path
 
 private const val imagePath = "image_path_param"
 
 class ArkCanvasFragment : Fragment() {
-    private var imagePathParam: String? = null
+    private lateinit var imagePathParam: String
 
-    lateinit var prefs: Preferences
+    private lateinit var prefs: Preferences
 
-    lateinit var viewModel: EditViewModel
-    lateinit var bitmapResourceManager: CanvasResourceManager
-    lateinit var svgResourceManager: CanvasResourceManager
+    private lateinit var viewModel: EditViewModel
+    private lateinit var bitmapResourceManager: CanvasResourceManager
+    private lateinit var svgResourceManager: CanvasResourceManager
 
     lateinit var editManager: EditManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            imagePathParam = it.getString(imagePath)
+            imagePathParam = it.getString(imagePath) ?: ""
         }
         val context = requireActivity().applicationContext
         prefs = Preferences(appCtx = context)
@@ -46,7 +47,7 @@ class ArkCanvasFragment : Fragment() {
         viewModel = EditViewModel(
             primaryColor = 0xFF101828,
             launchedFromIntent = false,
-            imagePath = Path("/storage/emulated/0/Documents/improvement.png"),
+            imagePath = pathFromString(),
             imageUri = null,
             maxResolution = Resolution(350, 720),
             prefs = prefs,
@@ -54,6 +55,14 @@ class ArkCanvasFragment : Fragment() {
             bitMapResourceManager = bitmapResourceManager,
             svgResourceManager = svgResourceManager,
         )
+    }
+
+    private fun pathFromString(): Path?{
+        return if (imagePathParam.isEmpty()) {
+            null
+        } else {
+            Path(imagePathParam)
+        }
     }
 
     override fun onCreateView(
@@ -84,7 +93,6 @@ class ArkCanvasFragment : Fragment() {
                     onSaveSvg = { /*TODO*/ },
                     viewModel = viewModel
                 )
-//                EditCanvas(viewModel = viewModel)
             }
         }
     }

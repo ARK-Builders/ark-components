@@ -106,9 +106,6 @@ class EditViewModel(
         imagePath?.let {
             loadResource(it)
         }
-        if (imageUri == null && imagePath == null) {
-            initDefaults()
-        }
         initDefaults()
         loadUsedColors()
     }
