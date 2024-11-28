@@ -1,6 +1,6 @@
 [versions]
 coil = "2.4.0"
-androidxFragmentKtx = "1.6.1"
+androidxFragmentKtx = "1.7.1"
 fastadapter = "5.7.0"
 arkLib = "0.3.5"
 orbitMvi = "6.1.0"
