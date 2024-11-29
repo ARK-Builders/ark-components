@@ -1,14 +1,12 @@
 package dev.arkbuilders.sample.canvas
 
-import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import dev.arkbuilders.canvas.presentation.ArkCanvasFragment
 import dev.arkbuilders.canvas.presentation.picker.PickerScreen
@@ -23,7 +21,6 @@ class FilePickerFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_file_picker, container, false)
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
