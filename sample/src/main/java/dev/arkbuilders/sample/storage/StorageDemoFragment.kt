@@ -16,6 +16,7 @@ import dev.arkbuilders.sample.R
 import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
 import java.io.File
+import java.util.UUID
 
 class StorageDemoFragment: DialogFragment() {
 
@@ -31,6 +32,11 @@ class StorageDemoFragment: DialogFragment() {
             context?.contentResolver?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             workingDir = uri.getAbsolutePath()
             refreshFilesTree()
+            val initialStorageFile = UUID.randomUUID().toString()
+            binding.edtStoragePath.setText(initialStorageFile)
+            storage = FileStorage(initialStorageFile,
+                "$workingDir/$initialStorageFile"
+            )
         }
     }
 
@@ -62,10 +68,11 @@ class StorageDemoFragment: DialogFragment() {
 
         binding.edtStoragePath.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val relativeStoragePath = v.text
-                storage = FileStorage(relativeStoragePath.toString(),
+                val relativeStoragePath = v.text.toString()
+                storage = FileStorage(relativeStoragePath,
                     "$workingDir/$relativeStoragePath"
                 )
+                binding.tvCurrentAbsolutePath.text = String.format("%s/%s", workingDir, relativeStoragePath)
                 return@setOnEditorActionListener true
             }
             false
