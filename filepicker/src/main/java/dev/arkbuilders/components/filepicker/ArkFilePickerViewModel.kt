@@ -192,7 +192,6 @@ internal class ArkFilePickerViewModel(
         val rootsWithFavorites = container.stateFlow.value.rootsWithFavs
         val roots = rootsWithFavorites.keys
         val root = roots.find { root -> file.startsWith(root) }
-        val favorites = rootsWithFavorites[root]?.flatten()
 
         val hasNestedRoot = file.hasNestedRoot(roots)
 
@@ -204,10 +203,14 @@ internal class ArkFilePickerViewModel(
         val haveRoot = haveRoot()
 
         root?.let {
-
             //Make sure file isn't inside a root folder
             if (root != file) {
-                val foundAsFavorite = favorites?.any { file.endsWith(it) } ?: false
+                val favorites = rootsWithFavorites.map { (root, relativeFavorites) ->
+                    relativeFavorites.map {
+                        root.resolve(it)
+                    }
+                }.flatten()
+                val foundAsFavorite = favorites.any { it == file }
 
                 if (!foundAsFavorite) {
                     addFavorite(file)
