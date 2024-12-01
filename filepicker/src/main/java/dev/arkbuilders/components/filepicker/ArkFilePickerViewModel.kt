@@ -15,6 +15,7 @@ import dev.arkbuilders.arklib.data.folders.FoldersRepo
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.listChildren
 import dev.arkbuilders.components.utils.hasNestedOrParentalRoot
+import dev.arkbuilders.components.utils.hasNestedRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
@@ -193,7 +194,7 @@ internal class ArkFilePickerViewModel(
         val root = roots.find { root -> file.startsWith(root) }
         val favorites = rootsWithFavorites[root]?.flatten()
 
-        val hasNestedRoot = file.hasNestedOrParentalRoot(roots)
+        val hasNestedRoot = file.hasNestedRoot(roots)
 
         if (hasNestedRoot) {
             postSideEffect(FilePickerSideEffect.NestedRootProhibited)
