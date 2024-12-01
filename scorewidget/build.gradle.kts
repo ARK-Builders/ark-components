@@ -57,7 +57,7 @@ dependencies {
     implementation(libraries.arklib)
     implementation(libraries.orbit.mvi.viewmodel)
     implementation(libs.orbit.mvi.compose)
-    implementation("com.github.mdrlzy:ComposeCounterSlider:0.1.4")
+    implementation(libs.counterslider)
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)
