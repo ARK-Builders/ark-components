@@ -21,3 +21,20 @@ fun FragmentManager.onArkPathPicked(
         )
     }
 }
+
+fun FragmentManager.onArkRootOrFavPicked(
+    lifecycleOwner: LifecycleOwner,
+    listener: (path: Path, rootNotFavorite: Boolean) -> Unit
+) {
+    setFragmentResultListener(
+        ArkRootPickerFragment.ROOT_PICKED_REQUEST_KEY,
+        lifecycleOwner
+    ) { _, bundle ->
+        listener(
+            Path(
+                bundle.getString(ArkRootPickerFragment.PICKED_PATH_BUNDLE_KEY)!!
+            ),
+            bundle.getBoolean(ArkRootPickerFragment.ROOT_NOT_FAV_BUNDLE_KEY)
+        )
+    }
+}

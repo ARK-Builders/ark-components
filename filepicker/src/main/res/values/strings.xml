@@ -18,6 +18,8 @@
     <string name="ark_file_picker_pin_folder_only">Only folder can be pinned.</string>
     <string name="ark_file_nested_root_inside">There\'s already nested root(s) inside.</string>
     <string name="ark_file_picker_pin">Pin</string>
+    <string name="ark_file_picker_root">Root</string>
+    <string name="ark_file_picker_favorite">Favorite</string>
     <plurals name="ark_file_picker_items">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>

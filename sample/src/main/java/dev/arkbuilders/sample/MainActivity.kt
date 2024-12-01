@@ -16,6 +16,7 @@ import com.google.android.material.button.MaterialButton
 import dev.arkbuilders.components.filepicker.ArkFilePickerConfig
 import dev.arkbuilders.components.filepicker.ArkFilePickerFragment
 import dev.arkbuilders.components.filepicker.ArkFilePickerMode
+import dev.arkbuilders.components.filepicker.ArkRootPickerFragment
 import dev.arkbuilders.components.filepicker.onArkPathPicked
 import dev.arkbuilders.sample.about.AboutActivity
 import dev.arkbuilders.sample.storage.StorageDemoFragment
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btn_root_picker).setOnClickListener {
             resolvePermissions()
-            RootFavPickerDialog
+            ArkRootPickerFragment
                 .newInstance()
                 .show(supportFragmentManager, null)
         }
