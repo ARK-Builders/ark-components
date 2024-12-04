@@ -542,6 +542,52 @@ class EditManager {
                     !_isEraseMode.value
             )
 
+    fun shouldApplyOperation(): Boolean = (
+            _isCropMode.value ||
+                    _isRotateMode.value ||
+                    _isResizeMode.value ||
+                    _isBlurMode.value
+            )
+
+    fun isControlsDisabled(): Boolean = (
+            !_isRotateMode.value &&
+                    !_isResizeMode.value &&
+                    !_isCropMode.value &&
+                    !_isEyeDropperMode.value
+            )
+
+    fun shouldCancelOperation(): Boolean = (
+            _isCropMode.value ||
+                    _isRotateMode.value ||
+                    _isResizeMode.value ||
+                    _isEyeDropperMode.value ||
+                    _isBlurMode.value
+            )
+
+    fun isEligibleForBlurMode() = (
+            !_isRotateMode.value &&
+                    !_isCropMode.value &&
+                    !_isEyeDropperMode.value &&
+                    !_isResizeMode.value &&
+                    !_isEraseMode.value
+            )
+
+    fun isEligibleForResizeMode() = (
+            !_isRotateMode.value &&
+                    !_isCropMode.value &&
+                    !_isEyeDropperMode.value &&
+                    !_isEraseMode.value &&
+                    !_isBlurMode.value
+            )
+
+    fun shouldExpandColorDialog() = (
+            !_isRotateMode.value &&
+                    !_isResizeMode.value &&
+                    !_isCropMode.value &&
+                    !_isEraseMode.value &&
+                    !_isBlurMode.value
+            )
+
     fun undo() {
         if (canUndo.value) {
             val undoTask = undoStack.pop()
@@ -617,6 +663,7 @@ class EditManager {
     }
 
     fun clearEdits() {
+        if (_isRotateMode.value || _isResizeMode.value || _isCropMode.value || _isEyeDropperMode.value) return
         clearPaths()
         clearResizes()
         clearRotations()

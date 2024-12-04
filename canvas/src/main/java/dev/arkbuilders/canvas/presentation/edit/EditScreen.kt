@@ -96,29 +96,27 @@ fun EditScreen(
     }
 
     if (showDefaultsDialog.value) {
-        viewModel.editManager.apply {
-            resolution.value?.let {
-                NewImageOptionsDialog(
-                    it,
-                    maxResolution,
-                    this.backgroundColor.value,
-                    navigateBack,
-                    this,
-                    persistDefaults = { color, resolution ->
-                        viewModel.persistDefaults(color, resolution)
-                    },
-                    onConfirm = {
-                        showDefaultsDialog.value = false
-                    }
-                )
-            }
+        viewModel.editManager.resolution.value?.let {
+            NewImageOptionsDialog(
+                it,
+                maxResolution,
+                viewModel.editManager.backgroundColor.value,
+                navigateBack,
+                viewModel.editManager,
+                persistDefaults = { color, resolution ->
+                    viewModel.persistDefaults(color, resolution)
+                },
+                onConfirm = {
+                    showDefaultsDialog.value = false
+                }
+            )
         }
     }
     ExitDialog(
         viewModel = viewModel,
         navigateBack = {
             navigateBack()
-//            viewModel.isLoaded = false
+            viewModel.isLoaded = false
         },
         launchedFromIntent = launchedFromIntent,
     )
@@ -350,23 +348,13 @@ private fun BoxScope.TopMenu(
     ConfirmClearDialog(
         viewModel.showConfirmClearDialog,
         onConfirm = {
-            viewModel.editManager.apply {
-                if (
-                    !isRotateMode.value &&
-                    !isResizeMode.value &&
-                    !isCropMode.value &&
-                    !isEyeDropperMode.value
-                ) clearEdits()
-            }
+            viewModel.editManager.clearEdits()
         }
     )
 
     if (
         !viewModel.menusVisible &&
-        !viewModel.editManager.isRotateMode.value &&
-        !viewModel.editManager.isResizeMode.value &&
-        !viewModel.editManager.isCropMode.value &&
-        !viewModel.editManager.isEyeDropperMode.value
+        viewModel.editManager.isControlsDisabled()
     )
         return
     Icon(
@@ -377,11 +365,7 @@ private fun BoxScope.TopMenu(
             .clip(CircleShape)
             .clickable {
                 viewModel.editManager.apply {
-                    if (
-                        isCropMode.value || isRotateMode.value ||
-                        isResizeMode.value || isEyeDropperMode.value ||
-                        isBlurMode.value
-                    ) {
+                    if (shouldCancelOperation()) {
                         viewModel.cancelOperation()
                         return@clickable
                     }
@@ -394,7 +378,7 @@ private fun BoxScope.TopMenu(
                         return@clickable
                     }
                     if (
-                        !viewModel.editManager.canUndo.value
+                        !canUndo.value
                     ) {
                         if (launchedFromIntent) {
                             context
@@ -423,23 +407,13 @@ private fun BoxScope.TopMenu(
                 .size(36.dp)
                 .clip(CircleShape)
                 .clickable {
-                    viewModel.editManager.apply {
-                        if (
-                            isCropMode.value || isRotateMode.value ||
-                            isResizeMode.value || isBlurMode.value
-                        ) {
-                            viewModel.applyOperation()
-                            return@clickable
-                        }
+                    if (viewModel.editManager.shouldApplyOperation()) {
+                        viewModel.applyOperation()
+                        return@clickable
                     }
                     viewModel.showMoreOptionsPopup = true
                 },
-            imageVector = if (
-                viewModel.editManager.isCropMode.value ||
-                viewModel.editManager.isRotateMode.value ||
-                viewModel.editManager.isResizeMode.value ||
-                viewModel.editManager.isBlurMode.value
-            )
+            imageVector = if (viewModel.editManager.shouldApplyOperation())
                 ImageVector.vectorResource(R.drawable.ic_check)
             else ImageVector.vectorResource(R.drawable.ic_more_vert),
             tint = MaterialTheme.colors.primary,
@@ -611,13 +585,7 @@ private fun EditMenuContent(
                             colorDialogExpanded.value = true
                             return@clickable
                         }
-                        if (
-                            !editManager.isRotateMode.value &&
-                            !editManager.isResizeMode.value &&
-                            !editManager.isCropMode.value &&
-                            !editManager.isEraseMode.value &&
-                            !editManager.isBlurMode.value
-                        )
+                        if (editManager.shouldExpandColorDialog())
                             colorDialogExpanded.value = true
                     }
             )
@@ -749,12 +717,7 @@ private fun EditMenuContent(
                     .clip(CircleShape)
                     .clickable {
                         editManager.apply {
-                            if (
-                                !isRotateMode.value &&
-                                !isCropMode.value &&
-                                !isEyeDropperMode.value &&
-                                !isEraseMode.value &&
-                                !isBlurMode.value
+                            if (isEligibleForResizeMode()
                             )
                                 toggleResizeMode()
                             else return@clickable
@@ -787,12 +750,7 @@ private fun EditMenuContent(
                     .clip(CircleShape)
                     .clickable {
                         editManager.apply {
-                            if (
-                                !isRotateMode.value &&
-                                !isCropMode.value &&
-                                !isEyeDropperMode.value &&
-                                !isResizeMode.value &&
-                                !isEraseMode.value &&
+                            if (isEligibleForBlurMode() &&
                                 !viewModel.strokeSliderExpanded
                             ) toggleBlurMode()
                             if (isBlurMode.value) {
