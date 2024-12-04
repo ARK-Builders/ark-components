@@ -41,8 +41,6 @@ import dev.arkbuilders.canvas.presentation.edit.resize.Hint
 import dev.arkbuilders.canvas.presentation.edit.resize.delayHidingHint
 import dev.arkbuilders.canvas.presentation.theme.Gray
 
-//import dev.arkbuilders.canvas.presentation.theme.getGray
-
 @Composable
 fun NewImageOptionsDialog(
     defaultResolution: Resolution,
