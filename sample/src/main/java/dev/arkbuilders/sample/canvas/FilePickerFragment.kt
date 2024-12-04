@@ -32,9 +32,9 @@ class FilePickerFragment : Fragment() {
             )
             setContent {
                 // Set Content here
-                PickerScreen(fragmentManager = childFragmentManager,
+                PickerScreen(fragmentManager = requireActivity().supportFragmentManager,
                     onNavigateToEdit = { path, resolution ->
-                        onNavigateToEdit(path, parentFragmentManager)
+                        onNavigateToEdit(path, requireActivity().supportFragmentManager)
                     })
             }
         }
@@ -47,7 +47,8 @@ class FilePickerFragment : Fragment() {
 
         fragmentManager
             .beginTransaction()
-            .replace(R.id.canvas_content, canvasFragment)
+            .add(R.id.canvas_content, canvasFragment)
+            .addToBackStack(null)
             .commit()
     }
 

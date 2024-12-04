@@ -86,8 +86,8 @@ class ArkCanvasFragment : Fragment() {
                 EditScreen(
                     imagePath = null,
                     imageUri = null,
-                    fragmentManager = childFragmentManager,
-                    navigateBack = { /*TODO*/ },
+                    fragmentManager = requireActivity().supportFragmentManager,
+                    navigateBack = { requireActivity().supportFragmentManager.popBackStackImmediate() },
                     launchedFromIntent = false,
                     maxResolution = Resolution(350, 720),
                     onSaveSvg = { /*TODO*/ },
