@@ -798,6 +798,49 @@ class EditManager {
             .asImageBitmap()
     }
 
+    fun onResizeChanged(newSize: IntSize) {
+        drawAreaSize.value = newSize
+        when (true) {
+            isCropMode.value -> {
+                cropWindow.updateOnDrawAreaSizeChange(newSize)
+                return
+            }
+
+            isResizeMode.value -> {
+                if (
+                    backgroundImage.value?.width ==
+                    imageSize.width &&
+                    backgroundImage.value?.height ==
+                    imageSize.height
+                ) {
+                    val editMatrixScale = scaleToFitOnEdit().scale
+                    resizeOperation
+                        .updateEditMatrixScale(editMatrixScale)
+                }
+                if (
+                    resizeOperation.isApplied()
+                ) {
+                    resizeOperation.resetApply()
+                }
+                return
+            }
+
+            isRotateMode.value -> {
+                scaleToFitOnEdit()
+                return
+            }
+
+            isZoomMode.value -> {
+                return
+            }
+
+            else -> {
+                scaleToFit()
+                return
+            }
+        }
+    }
+
     fun fitImage(
         imageBitmap: ImageBitmap,
         maxWidth: Int,

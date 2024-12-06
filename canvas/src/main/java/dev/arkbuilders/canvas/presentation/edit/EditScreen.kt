@@ -249,51 +249,9 @@ private fun DrawContainer(
                 false
             }
             .onSizeChanged { newSize ->
-                if (newSize == IntSize.Zero) return@onSizeChanged
-                if (viewModel.showSavePathDialog) return@onSizeChanged
-                viewModel.editManager.drawAreaSize.value = newSize
+                if (newSize == IntSize.Zero || viewModel.showSavePathDialog) return@onSizeChanged
                 if (viewModel.isLoaded) {
-                    viewModel.editManager.apply {
-                        when (true) {
-                            isCropMode.value -> {
-                                cropWindow.updateOnDrawAreaSizeChange(newSize)
-                                return@onSizeChanged
-                            }
-
-                            isResizeMode.value -> {
-                                if (
-                                    backgroundImage.value?.width ==
-                                    imageSize.width &&
-                                    backgroundImage.value?.height ==
-                                    imageSize.height
-                                ) {
-                                    val editMatrixScale = scaleToFitOnEdit().scale
-                                    resizeOperation
-                                        .updateEditMatrixScale(editMatrixScale)
-                                }
-                                if (
-                                    resizeOperation.isApplied()
-                                ) {
-                                    resizeOperation.resetApply()
-                                }
-                                return@onSizeChanged
-                            }
-
-                            isRotateMode.value -> {
-                                scaleToFitOnEdit()
-                                return@onSizeChanged
-                            }
-
-                            isZoomMode.value -> {
-                                return@onSizeChanged
-                            }
-
-                            else -> {
-                                scaleToFit()
-                                return@onSizeChanged
-                            }
-                        }
-                    }
+                    viewModel.editManager.onResizeChanged(newSize)
                 }
                 viewModel.loadImage(context)
             },
