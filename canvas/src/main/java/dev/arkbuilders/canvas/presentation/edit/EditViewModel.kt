@@ -66,6 +66,11 @@ class EditViewModel(
     private val _usedColors = mutableListOf<Color>()
     val usedColors: List<Color> = _usedColors
 
+    fun onBottomButtonStateChange(scrollStateValue: Int, minStateValue: Int = 0, maxStateValue: Int) {
+        bottomButtonsScrollIsAtStart.value = scrollStateValue == minStateValue
+        bottomButtonsScrollIsAtEnd.value = scrollStateValue == maxStateValue
+    }
+
     private fun loadResource(path: Path) {
         viewModelScope.launch {
             if (path.name.endsWith(".png")) {

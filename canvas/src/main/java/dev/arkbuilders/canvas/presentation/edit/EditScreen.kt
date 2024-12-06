@@ -50,7 +50,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onSizeChanged
@@ -570,14 +569,7 @@ private fun EditMenuContent(
                             viewModel.strokeSliderExpanded = !viewModel.strokeSliderExpanded
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.ic_line_weight),
-                tint = if (
-                    !editManager.isRotateMode.value &&
-                    !editManager.isResizeMode.value &&
-                    !editManager.isCropMode.value &&
-                    !editManager.isEyeDropperMode.value &&
-                    !editManager.isBlurMode.value
-                ) editManager.paintColor.value
-                else Color.Black,
+                tint = if (editManager.isEligibleForUndoOrRedo()) editManager.paintColor.value else Color.Black,
                 contentDescription = null
             )
             Icon(
@@ -674,24 +666,8 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        editManager.apply {
-                            if (isEligibleForResizeMode()
-                            )
-                                toggleResizeMode()
-                            else return@clickable
-                            viewModel.menusVisible = !isResizeMode.value
-                            if (isResizeMode.value) {
-                                setBackgroundImage2()
-                                val imgBitmap = viewModel.getEditedImage()
-                                backgroundImage.value = imgBitmap
-                                resizeOperation.init(
-                                    imgBitmap.asAndroidBitmap()
-                                )
-                                return@clickable
-                            }
-                            cancelResizeMode()
-                            scaleToFit()
-                        }
+                        editManager.enterResizeMode()
+                        viewModel.menusVisible = !editManager.isResizeMode.value
                     },
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_aspect_ratio),
@@ -707,19 +683,7 @@ private fun EditMenuContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        editManager.apply {
-                            if (isEligibleForBlurMode() &&
-                                !viewModel.strokeSliderExpanded
-                            ) toggleBlurMode()
-                            if (isBlurMode.value) {
-                                setBackgroundImage2()
-                                backgroundImage.value = viewModel.getEditedImage()
-                                blurOperation.init()
-                                return@clickable
-                            }
-                            blurOperation.cancel()
-                            scaleToFit()
-                        }
+                        editManager.enterBlurMode(viewModel.strokeSliderExpanded)
                     },
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_blur_on),
@@ -731,9 +695,7 @@ private fun EditMenuContent(
             )
         }
     }
-    viewModel.bottomButtonsScrollIsAtStart.value = scrollState.value == 0
-    viewModel.bottomButtonsScrollIsAtEnd.value =
-        scrollState.value == scrollState.maxValue
+    viewModel.onBottomButtonStateChange(scrollState.value, 0, scrollState.maxValue)
 }
 
 @Composable

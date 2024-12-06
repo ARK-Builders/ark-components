@@ -744,6 +744,23 @@ class EditManager {
         _isResizeMode.value = !isResizeMode.value
     }
 
+    fun enterResizeMode() {
+        if (!isEligibleForResizeMode())
+            return
+        toggleResizeMode()
+        if (isResizeMode.value) {
+            setBackgroundImage2()
+            val imgBitmap = getEditedImage()
+            backgroundImage.value = imgBitmap
+            resizeOperation.init(
+                imgBitmap.asAndroidBitmap()
+            )
+            return
+        }
+        cancelResizeMode()
+        scaleToFit()
+    }
+
     fun cancelResizeMode() {
         backgroundImage.value = backgroundImage2.value
         editMatrix.reset()
@@ -751,6 +768,18 @@ class EditManager {
 
     fun toggleBlurMode() {
         _isBlurMode.value = !isBlurMode.value
+    }
+
+    fun enterBlurMode(strokeSliderExpanded: Boolean) {
+        if (isEligibleForBlurMode() && !strokeSliderExpanded) toggleBlurMode()
+        if (isBlurMode.value) {
+            setBackgroundImage2()
+            backgroundImage.value = getEditedImage()
+            blurOperation.init()
+            return
+        }
+        blurOperation.cancel()
+        scaleToFit()
     }
 
     fun setPaintStrokeWidth(strokeWidth: Float) {
