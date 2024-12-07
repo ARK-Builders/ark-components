@@ -201,7 +201,7 @@ private fun Menus(
                             },
                         imageVector = ImageVector
                             .vectorResource(R.drawable.ic_rotate_left),
-                        tint = MaterialTheme.colors.primary,
+                        tint = viewModel.editManager.colorProperties.primary,
                         contentDescription = null
                     )
                     Icon(
@@ -217,7 +217,7 @@ private fun Menus(
                             },
                         imageVector = ImageVector
                             .vectorResource(R.drawable.ic_rotate_right),
-                        tint = MaterialTheme.colors.primary,
+                        tint = viewModel.editManager.colorProperties.primary,
                         contentDescription = null
                     )
                 }
@@ -350,7 +350,7 @@ private fun BoxScope.TopMenu(
                 }
             },
         imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
-        tint = MaterialTheme.colors.primary,
+        tint = viewModel.editManager.colorProperties.primary,
         contentDescription = null
     )
 
@@ -373,7 +373,7 @@ private fun BoxScope.TopMenu(
             imageVector = if (viewModel.editManager.shouldApplyOperation())
                 ImageVector.vectorResource(R.drawable.ic_check)
             else ImageVector.vectorResource(R.drawable.ic_more_vert),
-            tint = MaterialTheme.colors.primary,
+            tint = viewModel.editManager.colorProperties.primary,
             contentDescription = null
         )
     }
@@ -511,7 +511,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_undo),
                 tint = if (
                     editManager.canUndo.value && (editManager.isEligibleForUndoOrRedo())
-                ) MaterialTheme.colors.primary else Color.Black,
+                ) viewModel.editManager.colorProperties.primary else Color.Black,
                 contentDescription = null
             )
             Icon(
@@ -526,7 +526,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.canRedo.value &&
                     (editManager.isEligibleForUndoOrRedo())
-                ) MaterialTheme.colors.primary else Color.Black,
+                ) viewModel.editManager.colorProperties.primary else Color.Black,
                 contentDescription = null
             )
             Box(
@@ -585,7 +585,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isEraseMode.value
                 )
-                    MaterialTheme.colors.primary
+                    viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -602,7 +602,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isZoomMode.value
                 )
-                    MaterialTheme.colors.primary
+                    viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -619,7 +619,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isPanMode.value
                 )
-                    MaterialTheme.colors.primary
+                    viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -637,7 +637,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_crop),
                 tint = if (
                     editManager.isCropMode.value
-                ) MaterialTheme.colors.primary
+                ) viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -655,7 +655,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_rotate_90_degrees_ccw),
                 tint = if (editManager.isRotateMode.value)
-                    MaterialTheme.colors.primary
+                    viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -672,7 +672,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_aspect_ratio),
                 tint = if (editManager.isResizeMode.value)
-                    MaterialTheme.colors.primary
+                    viewModel.editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -688,7 +688,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_blur_on),
                 tint = if (editManager.isBlurMode.value)
-                    MaterialTheme.colors.primary
+                    editManager.colorProperties.primary
                 else
                     Color.Black,
                 contentDescription = null
