@@ -155,38 +155,30 @@ class SVG {
 
                     event = next()
                 }
-
+                fun extractStrokeFromCommand(originalCommand: String, commandElements: List<String>) {
+                    if (commandElements.size > 3) {
+                        strokeColor = commandElements[3].toULong()
+                    }
+                    if (commandElements.size > 4) {
+                        strokeSize = commandElements[4].toFloat()
+                    }
+                    commands.addLast(SVGCommand.MoveTo.fromString(originalCommand).apply {
+                        paintColor = strokeColor
+                        brushSize = strokeSize
+                    })
+                }
                 pathData.split(COMMA).forEach {
                     val command = it.trim()
                     if (command.isEmpty()) return@forEach
                     val commandElements = command.split(" ")
+
                     when (command.first()) {
                         SVGCommand.MoveTo.CODE -> {
-                            if (commandElements.size > 3) {
-                                strokeColor = commandElements[3].toULong()
-                            }
-                            if (commandElements.size > 4) {
-                                strokeSize = commandElements[4].toFloat()
-                            }
-                            commands.addLast(SVGCommand.MoveTo.fromString(command).apply {
-                                paintColor = strokeColor
-                                brushSize = strokeSize
-                            })
+                            extractStrokeFromCommand(originalCommand = command, commandElements = commandElements)
                         }
-
                         SVGCommand.AbsLineTo.CODE -> {
-                            if (commandElements.size > 3) {
-                                strokeColor = commandElements[3].toULong()
-                            }
-                            if (commandElements.size > 4) {
-                                strokeSize = commandElements[4].toFloat()
-                            }
-                            commands.addLast(SVGCommand.MoveTo.fromString(command).apply {
-                                paintColor = strokeColor
-                                brushSize = strokeSize
-                            })
+                            extractStrokeFromCommand(originalCommand = command, commandElements = commandElements)
                         }
-
                         SVGCommand.AbsQuadTo.CODE -> {
                             if (commandElements.size > 5) {
                                 strokeColor = commandElements[5].toULong()
