@@ -36,6 +36,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import dev.arkbuilders.canvas.R
 import dev.arkbuilders.canvas.presentation.data.Resolution
+import dev.arkbuilders.canvas.presentation.drawing.ArkColorPalette
 import dev.arkbuilders.canvas.presentation.drawing.EditManager
 import dev.arkbuilders.canvas.presentation.edit.resize.Hint
 import dev.arkbuilders.canvas.presentation.edit.resize.delayHidingHint
@@ -169,7 +170,7 @@ fun NewImageOptionsDialog(
                             Text(
                                 stringResource(R.string.width),
                                 Modifier.fillMaxWidth(),
-                                color = editManager.colorProperties.primary,
+                                color = ArkColorPalette.primary,
                                 textAlign = TextAlign.Center
                             )
                         },
@@ -218,7 +219,7 @@ fun NewImageOptionsDialog(
                             Text(
                                 text = stringResource(R.string.height),
                                 modifier = Modifier.fillMaxWidth(),
-                                color = editManager.colorProperties.primary,
+                                color = ArkColorPalette.primary,
                                 textAlign = TextAlign.Center
                             )
                         },
@@ -279,12 +280,12 @@ fun NewImageOptionsDialog(
                             isVisible = false
                             navigateBack()
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = editManager.colorProperties.primary)
+                        colors = ButtonDefaults.textButtonColors(contentColor = ArkColorPalette.primary)
                     ) {
                         Text("Close")
                     }
                     TextButton(
-                        colors = ButtonDefaults.buttonColors(backgroundColor = editManager.colorProperties.primary),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = ArkColorPalette.primary),
                         modifier = Modifier
                             .padding(end = 8.dp),
                         onClick = {

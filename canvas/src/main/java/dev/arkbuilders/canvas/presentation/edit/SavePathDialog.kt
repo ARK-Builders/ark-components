@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedTextField
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.FragmentManager
 import dev.arkbuilders.canvas.R
+import dev.arkbuilders.canvas.presentation.drawing.ArkColorPalette
 import dev.arkbuilders.canvas.presentation.utils.findNotExistCopyName
 import dev.arkbuilders.canvas.presentation.utils.toast
 import dev.arkbuilders.components.filepicker.ArkFilePickerConfig
@@ -101,6 +103,10 @@ fun SavePathDialog(
                     fontSize = 18.sp
                 )
                 TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = ArkColorPalette.primary
+                    )
+                    ,
                     onClick = {
                         ArkFilePickerFragment
                             .newInstance(
@@ -178,7 +184,10 @@ fun SavePathDialog(
                 ) {
                     TextButton(
                         modifier = Modifier.padding(5.dp),
-                        onClick = onDismissClick
+                        onClick = onDismissClick,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = ArkColorPalette.primary
+                        )
                     ) {
                         Text(text = stringResource(R.string.cancel))
                     }
@@ -198,7 +207,10 @@ fun SavePathDialog(
                                 return@Button
                             }
                             onPositiveClick(currentPath?.resolve(name)!!)
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = ArkColorPalette.primary
+                        )
                     ) {
                         Text(text = stringResource(R.string.ok))
                     }

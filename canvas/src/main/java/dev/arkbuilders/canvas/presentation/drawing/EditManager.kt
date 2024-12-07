@@ -36,12 +36,11 @@ import timber.log.Timber
 import java.util.Stack
 import kotlin.system.measureTimeMillis
 
-class ArkColorPalette(
-    val primary: Color
-)
-class EditManager(
-     val colorProperties: ArkColorPalette = ArkColorPalette(primary = Color.Green)
-) {
+object ArkColorPalette {
+    val primary: Color = Color.Green
+
+}
+class EditManager{
     private val drawPaint: MutableState<Paint> = mutableStateOf(defaultPaint())
 
     private val _paintColor: MutableState<Color> =

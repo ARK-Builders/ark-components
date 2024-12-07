@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentManager
 import dev.arkbuilders.canvas.R
 import dev.arkbuilders.canvas.presentation.data.Resolution
+import dev.arkbuilders.canvas.presentation.drawing.ArkColorPalette
 import dev.arkbuilders.canvas.presentation.drawing.EditCanvas
 import dev.arkbuilders.canvas.presentation.edit.blur.BlurIntensityPopup
 import dev.arkbuilders.canvas.presentation.edit.crop.CropAspectRatiosMenu
@@ -201,7 +202,7 @@ private fun Menus(
                             },
                         imageVector = ImageVector
                             .vectorResource(R.drawable.ic_rotate_left),
-                        tint = viewModel.editManager.colorProperties.primary,
+                        tint = ArkColorPalette.primary,
                         contentDescription = null
                     )
                     Icon(
@@ -217,7 +218,7 @@ private fun Menus(
                             },
                         imageVector = ImageVector
                             .vectorResource(R.drawable.ic_rotate_right),
-                        tint = viewModel.editManager.colorProperties.primary,
+                        tint = ArkColorPalette.primary,
                         contentDescription = null
                     )
                 }
@@ -351,7 +352,7 @@ private fun BoxScope.TopMenu(
                 }
             },
         imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
-        tint = viewModel.editManager.colorProperties.primary,
+        tint = ArkColorPalette.primary,
         contentDescription = null
     )
 
@@ -374,7 +375,7 @@ private fun BoxScope.TopMenu(
             imageVector = if (viewModel.editManager.shouldApplyOperation())
                 ImageVector.vectorResource(R.drawable.ic_check)
             else ImageVector.vectorResource(R.drawable.ic_more_vert),
-            tint = viewModel.editManager.colorProperties.primary,
+            tint = ArkColorPalette.primary,
             contentDescription = null
         )
     }
@@ -512,7 +513,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_undo),
                 tint = if (
                     editManager.canUndo.value && (editManager.isEligibleForUndoOrRedo())
-                ) viewModel.editManager.colorProperties.primary else Color.Black,
+                ) ArkColorPalette.primary else Color.Black,
                 contentDescription = null
             )
             Icon(
@@ -527,7 +528,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.canRedo.value &&
                     (editManager.isEligibleForUndoOrRedo())
-                ) viewModel.editManager.colorProperties.primary else Color.Black,
+                ) ArkColorPalette.primary else Color.Black,
                 contentDescription = null
             )
             Box(
@@ -586,7 +587,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isEraseMode.value
                 )
-                    viewModel.editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -603,7 +604,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isZoomMode.value
                 )
-                    viewModel.editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -620,7 +621,7 @@ private fun EditMenuContent(
                 tint = if (
                     editManager.isPanMode.value
                 )
-                    viewModel.editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -638,7 +639,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_crop),
                 tint = if (
                     editManager.isCropMode.value
-                ) viewModel.editManager.colorProperties.primary
+                ) ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -656,7 +657,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_rotate_90_degrees_ccw),
                 tint = if (editManager.isRotateMode.value)
-                    viewModel.editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -673,7 +674,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_aspect_ratio),
                 tint = if (editManager.isResizeMode.value)
-                    viewModel.editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -689,7 +690,7 @@ private fun EditMenuContent(
                 imageVector = ImageVector
                     .vectorResource(R.drawable.ic_blur_on),
                 tint = if (editManager.isBlurMode.value)
-                    editManager.colorProperties.primary
+                    ArkColorPalette.primary
                 else
                     Color.Black,
                 contentDescription = null
@@ -782,7 +783,7 @@ private fun ExitDialog(
                     viewModel.showExitDialog = false
                     viewModel.showSavePathDialog = true
                 },
-                colors = ButtonDefaults.buttonColors(backgroundColor = viewModel.editManager.colorProperties.primary)
+                colors = ButtonDefaults.buttonColors(backgroundColor = ArkColorPalette.primary)
             ) {
                 Text("Save")
             }
@@ -797,11 +798,11 @@ private fun ExitDialog(
                         navigateBack()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(backgroundColor = viewModel.editManager.colorProperties.primary)
+                colors = ButtonDefaults.textButtonColors(contentColor = ArkColorPalette.primary)
             ) {
                 Text(
                     text = "Exit",
-                    color = viewModel.editManager.colorProperties.primary,
+                    color = ArkColorPalette.primary,
                 )
             }
         }
