@@ -37,7 +37,6 @@ import dev.arkbuilders.canvas.presentation.edit.EditViewModel
 import dev.arkbuilders.canvas.presentation.edit.TransparencyChessBoardCanvas
 import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow.Companion.computeDeltaX
 import dev.arkbuilders.canvas.presentation.edit.crop.CropWindow.Companion.computeDeltaY
-import dev.arkbuilders.canvas.presentation.graphics.Size
 import dev.arkbuilders.canvas.presentation.picker.toDp
 import dev.arkbuilders.canvas.presentation.utils.SVGCommand
 import dev.arkbuilders.canvas.presentation.utils.calculateRotationFromOneFingerGesture
@@ -185,7 +184,7 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                     svg.apply {
                         val svgCommand = SVGCommand.MoveTo(eventX, eventY).apply {
                             paintColor = editManager.currentPaint.color.value
-                            brushSizeId = Size.MEDIUM.id
+                            brushSize = editManager.currentPaint.strokeWidth
                         }
                         addCommand(svgCommand)
                     }
@@ -209,7 +208,7 @@ fun DrawCanvas(modifier: Modifier, viewModel: EditViewModel) {
                                 (eventY + currentPoint.y) / 2
                             ).apply {
                                 paintColor = editManager.currentPaint.color.value
-                                brushSizeId = Size.MEDIUM.id
+                                brushSize = editManager.currentPaint.strokeWidth
                             })
                     }
                 }
