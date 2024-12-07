@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "dev.arkbuilders.sample"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -46,6 +46,11 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion =  "1.5.10"
     }
 
     splits {
@@ -72,11 +77,13 @@ android {
 dependencies {
     implementation(project(":filepicker"))
     implementation(project(":about"))
+    implementation(project(":canvas"))
 
     implementation(libraries.arklib)
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(libraries.androidx.appcompat)
     implementation(libraries.android.material)
+    implementation(libs.androidx.ui.android)
     testImplementation(libraries.junit)
     androidTestImplementation(libraries.androidx.test.junit)
     androidTestImplementation(libraries.androidx.test.espresso)

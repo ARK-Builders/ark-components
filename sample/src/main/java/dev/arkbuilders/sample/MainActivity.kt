@@ -18,6 +18,7 @@ import dev.arkbuilders.components.filepicker.ArkFilePickerFragment
 import dev.arkbuilders.components.filepicker.ArkFilePickerMode
 import dev.arkbuilders.components.filepicker.onArkPathPicked
 import dev.arkbuilders.sample.about.AboutActivity
+import dev.arkbuilders.sample.canvas.CanvasActivity
 import dev.arkbuilders.sample.storage.StorageDemoFragment
 
 class MainActivity : AppCompatActivity() {
@@ -54,9 +55,12 @@ class MainActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btn_storage_demo).setOnClickListener {
             StorageDemoFragment().show(supportFragmentManager, StorageDemoFragment::class.java.name)
         }
-
         findViewById<MaterialButton>(R.id.btn_about).setOnClickListener {
             val intent = Intent(this, AboutActivity::class.java)
+            startActivity(intent)
+        }
+        findViewById<MaterialButton>(R.id.btn_canvas).setOnClickListener {
+            val intent = Intent(this, CanvasActivity::class.java)
             startActivity(intent)
         }
     }
