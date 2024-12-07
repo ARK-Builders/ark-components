@@ -249,6 +249,7 @@ private fun DrawContainer(
             }
             .onSizeChanged { newSize ->
                 if (newSize == IntSize.Zero || viewModel.showSavePathDialog) return@onSizeChanged
+                viewModel.editManager.drawAreaSize.value = newSize
                 if (viewModel.isLoaded) {
                     viewModel.editManager.onResizeChanged(newSize)
                 }

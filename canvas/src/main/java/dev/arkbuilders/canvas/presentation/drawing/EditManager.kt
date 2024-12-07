@@ -833,7 +833,6 @@ class EditManager(
     }
 
     fun onResizeChanged(newSize: IntSize) {
-        drawAreaSize.value = newSize
         when (true) {
             isCropMode.value -> {
                 cropWindow.updateOnDrawAreaSizeChange(newSize)
