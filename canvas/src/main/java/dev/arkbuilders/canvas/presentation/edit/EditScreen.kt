@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -780,7 +781,8 @@ private fun ExitDialog(
                 onClick = {
                     viewModel.showExitDialog = false
                     viewModel.showSavePathDialog = true
-                }
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = viewModel.editManager.colorProperties.primary)
             ) {
                 Text("Save")
             }
@@ -794,9 +796,13 @@ private fun ExitDialog(
                     } else {
                         navigateBack()
                     }
-                }
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = viewModel.editManager.colorProperties.primary)
             ) {
-                Text("Exit")
+                Text(
+                    text = "Exit",
+                    color = viewModel.editManager.colorProperties.primary,
+                )
             }
         }
     )

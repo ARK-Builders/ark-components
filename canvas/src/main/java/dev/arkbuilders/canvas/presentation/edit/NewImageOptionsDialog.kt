@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
@@ -169,7 +169,7 @@ fun NewImageOptionsDialog(
                             Text(
                                 stringResource(R.string.width),
                                 Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colors.primary,
+                                color = editManager.colorProperties.primary,
                                 textAlign = TextAlign.Center
                             )
                         },
@@ -216,9 +216,9 @@ fun NewImageOptionsDialog(
                         },
                         label = {
                             Text(
-                                stringResource(R.string.height),
-                                Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colors.primary,
+                                text = stringResource(R.string.height),
+                                modifier = Modifier.fillMaxWidth(),
+                                color = editManager.colorProperties.primary,
                                 textAlign = TextAlign.Center
                             )
                         },
@@ -278,11 +278,13 @@ fun NewImageOptionsDialog(
                         onClick = {
                             isVisible = false
                             navigateBack()
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = editManager.colorProperties.primary)
                     ) {
                         Text("Close")
                     }
                     TextButton(
+                        colors = ButtonDefaults.buttonColors(backgroundColor = editManager.colorProperties.primary),
                         modifier = Modifier
                             .padding(end = 8.dp),
                         onClick = {
