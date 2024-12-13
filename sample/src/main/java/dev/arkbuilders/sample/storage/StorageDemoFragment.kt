@@ -110,8 +110,11 @@ class StorageDemoFragment : DialogFragment() {
         }
 
         btnReadFs.setOnClickListener {
-            val data = storage?.readFS()
-            Toast.makeText(requireContext(), data.toString(), Toast.LENGTH_SHORT).show()
+            storage?.let {
+                val data = storage!!.readFS()
+                Toast.makeText(requireContext(), data.toString(), Toast.LENGTH_SHORT).show()
+                updateDisplayMap()
+            }
         }
 
         btnWriteFs.setOnClickListener {
@@ -146,12 +149,14 @@ class StorageDemoFragment : DialogFragment() {
 
         btnGetId.setOnClickListener {
             val id = binding.edtGetId.text.toString()
-            val value = storage?.get(id)
-            Toast.makeText(
-                requireContext(),
-                if (value?.isNotBlank() == true) value else "NOT FOUND",
-                Toast.LENGTH_SHORT
-            ).show()
+            storage?.let {
+                val value = storage!!.get(id)
+                Toast.makeText(
+                    requireContext(),
+                    value ?: "NOT FOUND",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
