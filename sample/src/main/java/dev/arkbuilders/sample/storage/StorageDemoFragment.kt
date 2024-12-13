@@ -39,7 +39,7 @@ class StorageDemoFragment : DialogFragment() {
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
                 workingDir = uri.getAbsolutePath()
-                val storageName = UUID.randomUUID().toString().take(6)
+                val storageName = UUID.randomUUID().toString().take(6) + ".txt"
                 binding.edtStorageName.setText(storageName)
                 newStorage(storageName)
                 updateDisplayMap()
