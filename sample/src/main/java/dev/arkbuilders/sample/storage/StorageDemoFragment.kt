@@ -21,6 +21,7 @@ import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
 import java.util.UUID
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 class StorageDemoFragment : DialogFragment() {
 
@@ -65,6 +66,8 @@ class StorageDemoFragment : DialogFragment() {
     }
 
     private fun initViews(binding: FragmentStorageDemoBinding) = binding.apply {
+        updateBtnsEnabled(storageFileExists = false)
+
         btnWorkingDir.setOnClickListener {
             selectDirRequest.launch(null)
         }
@@ -118,7 +121,10 @@ class StorageDemoFragment : DialogFragment() {
         }
 
         btnWriteFs.setOnClickListener {
-            storage?.writeFS()
+            storage?.let {
+                storage!!.writeFS()
+                updateBtnsEnabled(storageFileExists = true)
+            }
         }
 
         btnErase.setOnClickListener {
@@ -127,6 +133,7 @@ class StorageDemoFragment : DialogFragment() {
             binding.tvCurrentAbsolutePath.text = workingDir
             binding.edtStorageName.setText("")
             updateDisplayMap()
+            updateBtnsEnabled(storageFileExists = false)
         }
 
         btnMerge.setOnClickListener {
@@ -165,6 +172,7 @@ class StorageDemoFragment : DialogFragment() {
         storage = FileStorage(name, absolutePath)
         binding.tvCurrentAbsolutePath.text = absolutePath
         updateDisplayMap()
+        updateBtnsEnabled(Path(absolutePath).exists())
     }
 
     private fun updateDisplayMap() {
@@ -177,6 +185,33 @@ class StorageDemoFragment : DialogFragment() {
             mapEntries.append(key).append(" -> ").append(value).append("\n")
         }
         binding.tvMapValues.text = mapEntries.toString().ifEmpty { getString(R.string.empty_map) }
+    }
+
+    private fun updateBtnsEnabled(storageFileExists: Boolean) {
+        val allBtns = with(binding) {
+            listOf(
+                btnSetEntry,
+                btnDeleteEntry,
+                btnSyncStatus,
+                btnSync,
+                btnReadFs,
+                btnWriteFs,
+                btnErase,
+                btnMerge,
+                btnGetId
+            )
+        }
+        val btnsRequireStorageFileExists =
+            with(binding) { listOf(btnSyncStatus, btnSync, btnReadFs, btnErase) }
+
+        storage?.let {
+            allBtns.forEach { it.isEnabled = true }
+            if (storageFileExists.not()) {
+                btnsRequireStorageFileExists.forEach { it.isEnabled = false }
+            }
+        } ?: let {
+            allBtns.forEach { it.isEnabled = false }
+        }
     }
 
     companion object {
