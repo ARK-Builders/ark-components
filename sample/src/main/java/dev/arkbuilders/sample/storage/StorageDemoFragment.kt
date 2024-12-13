@@ -146,9 +146,12 @@ class StorageDemoFragment : DialogFragment() {
 
         btnGetId.setOnClickListener {
             val id = binding.edtGetId.text.toString()
-            storage?.get(id)?.let { value ->
-                Toast.makeText(requireContext(), value, Toast.LENGTH_SHORT).show()
-            }
+            val value = storage?.get(id)
+            Toast.makeText(
+                requireContext(),
+                if (value?.isNotBlank() == true) value else "NOT FOUND",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
