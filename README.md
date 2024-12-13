@@ -28,4 +28,3 @@ git push --tags
 
 - Create an action build file under `.github/workflows/` folder, following any existing build script.
 - Create a release build file under `.github/workflows/` folder, following any existing release script.
-

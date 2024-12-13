@@ -39,7 +39,7 @@ class MapEntryDialog(private val isDelete: Boolean,
                 false
             }
         } else {
-            mBinding.tvTitle.text = getString(R.string.new_map_entry)
+            mBinding.tvTitle.text = getString(R.string.set_map_entry)
             mBinding.edtValue.visibility = View.VISIBLE
             mBinding.edtValue.setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {

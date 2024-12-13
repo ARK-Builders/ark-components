@@ -72,7 +72,7 @@ android {
 dependencies {
     implementation(project(":filepicker"))
     implementation(project(":about"))
-
+    implementation(libraries.core)
     implementation(libraries.arklib)
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(libraries.androidx.appcompat)
