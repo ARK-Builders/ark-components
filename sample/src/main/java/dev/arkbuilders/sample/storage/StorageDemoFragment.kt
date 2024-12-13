@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import dev.arkbuilders.core.FileStorage
@@ -102,6 +103,12 @@ class StorageDemoFragment : DialogFragment() {
 
         binding.btnWriteFs.setOnClickListener {
             storage?.writeFS()
+        }
+
+        binding.btnSyncStatus.setOnClickListener {
+            storage?.syncStatus()?.let {
+                Toast.makeText(requireContext(), it.name, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
