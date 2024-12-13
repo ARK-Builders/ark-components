@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +14,9 @@ import dev.arkbuilders.core.FileStorage
 import dev.arkbuilders.sample.R
 import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
-import java.io.File
 import java.util.UUID
 
-class StorageDemoFragment: DialogFragment() {
+class StorageDemoFragment : DialogFragment() {
 
     private val TAG = StorageDemoFragment::class.java.name
 
@@ -26,23 +24,21 @@ class StorageDemoFragment: DialogFragment() {
     private var workingDir: String = "/"
     private var storage: FileStorage? = null
 
-    private val selectDirRequest = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        uri?.let {
-            // call this to persist permission across device reboots
-            context?.contentResolver?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            workingDir = uri.getAbsolutePath()
-            refreshFilesTree()
-            val initialStorageFile = UUID.randomUUID().toString()
-            binding.edtStoragePath.setText(initialStorageFile)
-            storage = FileStorage(initialStorageFile,
-                "$workingDir/$initialStorageFile"
-            )
+    private val selectDirRequest =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+            uri?.let {
+                // call this to persist permission across device reboots
+                context?.contentResolver?.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                workingDir = uri.getAbsolutePath()
+                val storageName = UUID.randomUUID().toString().take(6)
+                binding.edtStorageName.setText(storageName)
+                newStorage(storageName)
+                updateDisplayMap()
+            }
         }
-    }
-
-    private fun getCurrentAbsolutePath(): String {
-        return workingDir + "/" + binding.edtStoragePath.text.toString()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setStyle(STYLE_NORMAL, R.style.Theme_ArkComponents)
@@ -55,7 +51,8 @@ class StorageDemoFragment: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val layoutInflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
+        val layoutInflater =
+            context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
         binding = FragmentStorageDemoBinding.inflate(layoutInflater ?: LayoutInflater.from(context))
         initViews(binding)
         return binding.root
@@ -66,72 +63,64 @@ class StorageDemoFragment: DialogFragment() {
             selectDirRequest.launch(null)
         }
 
-        binding.edtStoragePath.setOnEditorActionListener { v, actionId, event ->
+        binding.edtStorageName.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val relativeStoragePath = v.text.toString()
-                storage = FileStorage(relativeStoragePath,
-                    "$workingDir/$relativeStoragePath"
-                )
-                binding.tvCurrentAbsolutePath.text = String.format("%s/%s", workingDir, relativeStoragePath)
+                val storageName = v.text.toString()
+                newStorage(storageName)
                 return@setOnEditorActionListener true
             }
             false
         }
 
         binding.btnNewMapEntry.setOnClickListener {
-            MapEntryDialog(isDelete = false, onDone = { key, value ->
-                if (storage != null) {
-                    storage!!.set(key, value)
+            MapEntryDialog(
+                isDelete = false,
+                onDone = { key, value ->
+                    storage?.set(key, value)
+                    updateDisplayMap()
                 }
-                refreshStorage()
-            }).show(parentFragmentManager, MapEntryDialog::class.java.name)
+            ).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
         binding.btnDeleteEntry.setOnClickListener {
-            MapEntryDialog(isDelete = true, onDone = { key, _ ->
-                if (storage != null) {
-                    storage!!.remove(key)
+            MapEntryDialog(
+                isDelete = true,
+                onDone = { key, _ ->
+                    storage?.remove(key)
+                    updateDisplayMap()
                 }
-                refreshStorage()
-            }).show(parentFragmentManager, MapEntryDialog::class.java.name)
+            ).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
         binding.btnClearMap.setOnClickListener {
-            if (storage != null) {
-                storage!!.erase()
-            }
-            refreshStorage()
+            storage?.erase()
+            storage = null
+            binding.tvCurrentAbsolutePath.text = workingDir
+            binding.edtStorageName.setText("")
+            updateDisplayMap()
+        }
+
+        binding.btnWriteFs.setOnClickListener {
+            storage?.writeFS()
         }
     }
 
-    private fun refreshFilesTree() {
-        val currentAbsolutePath = getCurrentAbsolutePath()
-        binding.tvCurrentAbsolutePath.text = currentAbsolutePath
-
-        try {
-            val currentDir = File(currentAbsolutePath)
-            currentDir.mkdirs()
-            val listFiles = currentDir.listFiles() ?: return
-            val fileTreeBuilder = StringBuilder()
-            for (file in listFiles) {
-                fileTreeBuilder.append(file.name).append("\n")
-            }
-            binding.tvCurrentFileTree.text = fileTreeBuilder.toString()
-        } catch (e: Exception) {
-            Log.e(TAG, e.message.toString())
-        }
+    private fun newStorage(name: String) {
+        val absolutePath = "$workingDir/$name"
+        storage = FileStorage(name, absolutePath)
+        binding.tvCurrentAbsolutePath.text = absolutePath
+        updateDisplayMap()
     }
 
-    private fun refreshStorage() {
-        if (storage == null) {
+    private fun updateDisplayMap() {
+        storage ?: let {
             binding.tvMapValues.text = getString(R.string.empty_map)
             return
         }
-        storage!!.writeFS()
         val mapEntries = StringBuilder()
         for (entry in storage!!) {
             mapEntries.append(entry.key).append(" -> ").append(entry.value).append("\n")
         }
-        binding.tvMapValues.text = mapEntries.toString()
+        binding.tvMapValues.text = mapEntries.toString().ifEmpty { getString(R.string.empty_map) }
     }
 }

@@ -26,15 +26,15 @@
         android:layout_marginTop="10dp"
         android:imeOptions="actionDone"
         android:inputType="text"
-        android:id="@+id/edt_storage_path"
-        android:hint="Relative storage path (without leading slash)"/>
+        android:id="@+id/edt_storage_name"
+        android:hint="Name"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@+id/btn_working_dir"
         app:layout_constraintEnd_toEndOf="@+id/btn_working_dir"
-        app:layout_constraintTop_toBottomOf="@+id/edt_storage_path"
+        app:layout_constraintTop_toBottomOf="@+id/edt_storage_name"
         android:layout_marginTop="10dp"
         android:textStyle="bold"
         android:id="@+id/tv_current_absolute_path"
@@ -47,17 +47,6 @@
         app:layout_constraintStart_toStartOf="@+id/btn_working_dir"
         app:layout_constraintEnd_toEndOf="@+id/btn_working_dir"
         app:layout_constraintTop_toBottomOf="@+id/tv_current_absolute_path"
-        android:layout_marginTop="10dp"
-        android:id="@+id/tv_current_file_tree"
-        tools:text="/sdcard/Documents/.ark/test"
-        android:layout_marginStart="10dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@+id/btn_working_dir"
-        app:layout_constraintEnd_toEndOf="@+id/btn_working_dir"
-        app:layout_constraintTop_toBottomOf="@+id/tv_current_file_tree"
         android:layout_marginTop="20dp"
         android:id="@+id/tv_map_title"
         android:textStyle="bold"
@@ -114,5 +103,19 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:text="Clear map"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_write_fs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@+id/btn_clear_map"
+        android:ellipsize="middle"
+        android:maxLines="1"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Write FS"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
