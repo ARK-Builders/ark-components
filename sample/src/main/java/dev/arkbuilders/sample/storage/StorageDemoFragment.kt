@@ -11,11 +11,16 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import dev.arkbuilders.components.filepicker.ArkFilePickerConfig
+import dev.arkbuilders.components.filepicker.ArkFilePickerFragment
+import dev.arkbuilders.components.filepicker.ArkFilePickerMode
+import dev.arkbuilders.components.filepicker.onArkPathPicked
 import dev.arkbuilders.core.FileStorage
 import dev.arkbuilders.sample.R
 import dev.arkbuilders.sample.databinding.FragmentStorageDemoBinding
 import dev.arkbuilders.sample.extension.getAbsolutePath
 import java.util.UUID
+import kotlin.io.path.Path
 
 class StorageDemoFragment : DialogFragment() {
 
@@ -59,12 +64,12 @@ class StorageDemoFragment : DialogFragment() {
         return binding.root
     }
 
-    private fun initViews(binding: FragmentStorageDemoBinding) {
-        binding.btnWorkingDir.setOnClickListener {
+    private fun initViews(binding: FragmentStorageDemoBinding) = binding.apply {
+        btnWorkingDir.setOnClickListener {
             selectDirRequest.launch(null)
         }
 
-        binding.edtStorageName.setOnEditorActionListener { v, actionId, event ->
+        edtStorageName.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val storageName = v.text.toString()
                 newStorage(storageName)
@@ -73,7 +78,7 @@ class StorageDemoFragment : DialogFragment() {
             false
         }
 
-        binding.btnSetEntry.setOnClickListener {
+        btnSetEntry.setOnClickListener {
             MapEntryDialog(
                 isDelete = false,
                 onDone = { key, value ->
@@ -83,7 +88,7 @@ class StorageDemoFragment : DialogFragment() {
             ).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
-        binding.btnDeleteEntry.setOnClickListener {
+        btnDeleteEntry.setOnClickListener {
             MapEntryDialog(
                 isDelete = true,
                 onDone = { key, _ ->
@@ -93,7 +98,27 @@ class StorageDemoFragment : DialogFragment() {
             ).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
-        binding.btnErase.setOnClickListener {
+        btnSyncStatus.setOnClickListener {
+            storage?.syncStatus()?.let {
+                Toast.makeText(requireContext(), it.name, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnSync.setOnClickListener {
+            storage?.sync()
+            updateDisplayMap()
+        }
+
+        btnReadFs.setOnClickListener {
+            storage?.readFS()
+            updateDisplayMap()
+        }
+
+        btnWriteFs.setOnClickListener {
+            storage?.writeFS()
+        }
+
+        btnErase.setOnClickListener {
             storage?.erase()
             storage = null
             binding.tvCurrentAbsolutePath.text = workingDir
@@ -101,13 +126,28 @@ class StorageDemoFragment : DialogFragment() {
             updateDisplayMap()
         }
 
-        binding.btnWriteFs.setOnClickListener {
-            storage?.writeFS()
+        btnMerge.setOnClickListener {
+            ArkFilePickerFragment.newInstance(
+                ArkFilePickerConfig(
+                    pathPickedRequestKey = mergeFileRequestKey,
+                    initialPath = Path(workingDir),
+                    mode = ArkFilePickerMode.FILE
+                )
+            ).show(childFragmentManager, "merge")
         }
 
-        binding.btnSyncStatus.setOnClickListener {
-            storage?.syncStatus()?.let {
-                Toast.makeText(requireContext(), it.name, Toast.LENGTH_SHORT).show()
+        childFragmentManager.onArkPathPicked(
+            lifecycleOwner = this@StorageDemoFragment,
+            customRequestKey = mergeFileRequestKey
+        ) { pickedPath ->
+            storage?.merge(FileStorage("label", pickedPath.toString()))
+            updateDisplayMap()
+        }
+
+        btnGetId.setOnClickListener {
+            val id = binding.edtGetId.text.toString()
+            storage?.get(id)?.let { value ->
+                Toast.makeText(requireContext(), value, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -129,5 +169,9 @@ class StorageDemoFragment : DialogFragment() {
             mapEntries.append(key).append(" -> ").append(value).append("\n")
         }
         binding.tvMapValues.text = mapEntries.toString().ifEmpty { getString(R.string.empty_map) }
+    }
+
+    companion object {
+        private val mergeFileRequestKey = "merge"
     }
 }

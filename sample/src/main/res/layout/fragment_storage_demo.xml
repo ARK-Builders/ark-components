@@ -1,116 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="20dp">
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_working_dir"
-        android:ellipsize="middle"
-        android:maxLines="1"
-        android:text="Select working dir"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        android:id="@+id/edt_storage_name"
-        android:hint="Name"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:id="@+id/tv_current_absolute_path"
-        tools:text="/sdcard/Documents/.ark/test"
-        android:text="Resulting path here"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:id="@+id/tv_map_title"
-        android:textStyle="bold"
-        android:text="Current Map:" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:id="@+id/tv_map_values"
-        android:text="@string/empty_map"
-        android:layout_marginStart="10dp"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <Button
-            android:layout_width="0dp"
+            android:id="@+id/btn_working_dir"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/btn_set_entry"
             android:ellipsize="middle"
             android:maxLines="1"
+            android:text="Select working dir" />
+
+        <EditText
+            android:id="@+id/edt_storage_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Set entry"/>
+            android:hint="Name"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
 
-        <Button
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_current_absolute_path"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btn_delete_entry"
-            android:layout_weight="1"
-            android:ellipsize="middle"
-            android:maxLines="1"
+            android:layout_marginTop="10dp"
+            android:text="Resulting path here"
+            android:textStyle="bold"
+            tools:text="/sdcard/Documents/.ark/test" />
+
+        <TextView
+            android:id="@+id/tv_map_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Current Map:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_map_values"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:text="Delete an entry"/>
+            android:text="@string/empty_map" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_set_entry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:text="Set entry" />
+
+            <Button
+                android:id="@+id/btn_delete_entry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:text="Delete an entry" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_sync_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Sync status" />
+
+        <Button
+            android:id="@+id/btn_sync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Sync" />
+
+        <Button
+            android:id="@+id/btn_read_fs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Read FS" />
+
+        <Button
+            android:id="@+id/btn_write_fs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Write FS" />
+
+        <Button
+            android:id="@+id/btn_erase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Erase" />
+
+        <Button
+            android:id="@+id/btn_merge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Merge" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edt_get_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="ID"
+                android:layout_weight="1"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/btn_get_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:layout_marginStart="10dp"
+                android:text="Get" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_sync_status"
-        android:ellipsize="middle"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"
-        android:text="Sync status"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_read_fs"
-        android:ellipsize="middle"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"
-        android:text="Read FS"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_write_fs"
-        android:ellipsize="middle"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"
-        android:text="Write FS"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_erase"
-        android:ellipsize="middle"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"
-        android:text="Erase"/>
-
-</LinearLayout>
+</ScrollView>
