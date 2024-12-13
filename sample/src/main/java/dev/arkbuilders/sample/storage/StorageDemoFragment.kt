@@ -110,8 +110,8 @@ class StorageDemoFragment : DialogFragment() {
         }
 
         btnReadFs.setOnClickListener {
-            storage?.readFS()
-            updateDisplayMap()
+            val data = storage?.readFS()
+            Toast.makeText(requireContext(), data.toString(), Toast.LENGTH_SHORT).show()
         }
 
         btnWriteFs.setOnClickListener {
