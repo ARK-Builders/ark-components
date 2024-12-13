@@ -118,8 +118,8 @@ class StorageDemoFragment : DialogFragment() {
             return
         }
         val mapEntries = StringBuilder()
-        for (entry in storage!!) {
-            mapEntries.append(entry.key).append(" -> ").append(entry.value).append("\n")
+        storage!!.iterator().forEach { (key, value) ->
+            mapEntries.append(key).append(" -> ").append(value).append("\n")
         }
         binding.tvMapValues.text = mapEntries.toString().ifEmpty { getString(R.string.empty_map) }
     }
