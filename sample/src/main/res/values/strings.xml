@@ -9,4 +9,5 @@
     <string name="delete_map_entry">Delete map entry</string>
     <string name="empty_map">Empty</string>
     <string name="open_about">Open About</string>
+    <string name="set_map_entry">Set map entry</string>
 </resources>

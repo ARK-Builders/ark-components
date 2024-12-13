@@ -72,7 +72,7 @@ class StorageDemoFragment : DialogFragment() {
             false
         }
 
-        binding.btnNewMapEntry.setOnClickListener {
+        binding.btnSetEntry.setOnClickListener {
             MapEntryDialog(
                 isDelete = false,
                 onDone = { key, value ->
@@ -92,7 +92,7 @@ class StorageDemoFragment : DialogFragment() {
             ).show(parentFragmentManager, MapEntryDialog::class.java.name)
         }
 
-        binding.btnClearMap.setOnClickListener {
+        binding.btnErase.setOnClickListener {
             storage?.erase()
             storage = null
             binding.tvCurrentAbsolutePath.text = workingDir
