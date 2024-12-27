@@ -104,7 +104,6 @@ class ScoreActivity : AppCompatActivity() {
         horizontal.disposeComposition()
         horizontal.setContent {
             HorizontalScoreWidgetComposable(
-                modifier = Modifier.padding(60.dp),
                 size = DpSize(200.dp, 80.dp),
                 controller = scoreWidgetController
             )
