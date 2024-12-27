@@ -26,18 +26,14 @@ class ArkRootPickerFragment : ArkFilePickerFragment() {
             }
 
             val root = roots.find { root -> currentFolder.startsWith(root) }
+            val favorites = folders[root]?.flatten()
             root?.let {
                 if (root == currentFolder) {
                     rootNotFavorite = true
                     binding.btnPick.text = getString(R.string.ark_file_picker_root)
                     binding.btnPick.isEnabled = false
                 } else {
-                    val favorites = folders.map { (root, relativeFavorites) ->
-                        relativeFavorites.map {
-                            root.resolve(it)
-                        }
-                    }.flatten()
-                    val foundAsFavorite = favorites.any { it == currentFolder }
+                    val foundAsFavorite = favorites?.any { currentFolder.endsWith(it) } ?: false
                     rootNotFavorite = false
                     binding.btnPick.text = getString(R.string.ark_file_picker_favorite)
                     binding.btnPick.isEnabled = !foundAsFavorite
