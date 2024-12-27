@@ -1,6 +1,7 @@
 package dev.arkbuilders.sample
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -49,7 +50,6 @@ class ScoreActivity : AppCompatActivity() {
             this,
             customRequestKey = PICK_RESOURCE_KEY
         ) { resourcePath ->
-            btnPickResource.text = resourcePath.name
             rootFolder?.let {
                 onResourcePicked(root = it, resourcePath)
             }
@@ -78,7 +78,19 @@ class ScoreActivity : AppCompatActivity() {
     ) = lifecycleScope.launch {
         val (index, scoreStorage) = setupIndexAndScoreStorage(root)
         val id = index.allPaths().toList()
-            .find { it.second == resourcePath }!!.first
+            .find { it.second == resourcePath }?.first
+
+        id ?: let {
+            Toast.makeText(
+                this@ScoreActivity,
+                "File does not belong to root",
+                Toast.LENGTH_SHORT
+            ).show()
+            return@launch
+        }
+
+        findViewById<MaterialButton>(R.id.btn_pick_resource).text = resourcePath.name
+
         val scoreWidgetController = ScoreWidgetController(
             lifecycleScope,
             getCurrentId = { id },
