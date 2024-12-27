@@ -4,8 +4,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import dev.arkbuilders.arklib.data.folders.FoldersRepo
+import dev.arkbuilders.arklib.utils.INTERNAL_STORAGE
 import dev.arkbuilders.components.utils.hasNestedRoot
-import dev.arkbuilders.components.utils.isInternalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.file.Path
@@ -18,7 +18,7 @@ class ArkRootPickerFragment : ArkFilePickerFragment() {
             val folders = FoldersRepo.instance.provideFolders()
             val roots = folders.keys
 
-            if (currentFolder.isInternalStorage() || currentFolder.hasNestedRoot(roots)) {
+            if (currentFolder == INTERNAL_STORAGE || currentFolder.hasNestedRoot(roots)) {
                 rootNotFavorite = true
                 binding.btnPick.text = getString(R.string.ark_file_picker_root)
                 binding.btnPick.isEnabled = false
