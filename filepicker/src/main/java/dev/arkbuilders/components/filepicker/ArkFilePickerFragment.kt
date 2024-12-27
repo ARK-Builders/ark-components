@@ -41,7 +41,6 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.INTERNAL_STORAGE
 import org.orbitmvi.orbit.viewmodel.observe
-import dev.arkbuilders.components.filepicker.R
 import dev.arkbuilders.components.filepicker.databinding.ArkFilePickerDialogNewFolderBinding
 import dev.arkbuilders.components.filepicker.databinding.ArkFilePickerHostFragmentBinding
 import dev.arkbuilders.components.filepicker.databinding.ArkFilePickerItemFileBinding
@@ -211,7 +210,7 @@ open class ArkFilePickerFragment :
 
             if (newFolder.mkdirs()) {
                 if (isARKMode()) {
-                    viewModel.pinFile(newFolder.toPath())
+                    viewModel.pinFolder(newFolder.toPath())
                 }
                 //Reload current files tree
                 currentFolder?.let { viewModel.onItemClick(it) }
@@ -486,7 +485,7 @@ internal class FilesPage(
                             val popupMenu = PopupMenu(fragment.activity, anchor, Gravity.END)
                             popupMenu.menuInflater.inflate(R.menu.file_select_menu, popupMenu.menu)
                             popupMenu.setOnMenuItemClickListener {
-                                viewModel.pinFile(file)
+                                viewModel.pinFolder(file)
                                 true
                             }
                             popupMenu.show()

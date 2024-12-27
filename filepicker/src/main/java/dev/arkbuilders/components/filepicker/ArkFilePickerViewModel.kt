@@ -14,7 +14,6 @@ import org.orbitmvi.orbit.viewmodel.container
 import dev.arkbuilders.arklib.data.folders.FoldersRepo
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.listChildren
-import dev.arkbuilders.components.utils.hasNestedOrParentalRoot
 import dev.arkbuilders.components.utils.hasNestedRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -183,7 +182,7 @@ internal class ArkFilePickerViewModel(
         return arkGlobal?.exists() == true
     }
 
-    fun pinFile(file: Path) = intent {
+    fun pinFolder(file: Path) = intent {
         if (!file.isDirectory()) {
             postSideEffect(FilePickerSideEffect.CannotPinFile)
             return@intent
