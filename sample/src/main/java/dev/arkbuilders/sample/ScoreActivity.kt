@@ -86,14 +86,20 @@ class ScoreActivity : AppCompatActivity() {
         )
         scoreWidgetController.init(scoreStorage)
 
-        findViewById<ComposeView>(R.id.score_widget_horizontal).setContent {
+        val horizontal = findViewById<ComposeView>(R.id.score_widget_horizontal)
+        val vertical = findViewById<ComposeView>(R.id.score_widget_vertical)
+
+        horizontal.disposeComposition()
+        horizontal.setContent {
             HorizontalScoreWidgetComposable(
+                modifier = Modifier.padding(60.dp),
                 size = DpSize(200.dp, 80.dp),
                 controller = scoreWidgetController
             )
         }
 
-        findViewById<ComposeView>(R.id.score_widget_vertical).setContent {
+        vertical.disposeComposition()
+        vertical.setContent {
             VerticalScoreWidgetComposable(
                 modifier = Modifier.padding(40.dp),
                 size = DpSize(50.dp, 120.dp),
