@@ -21,7 +21,9 @@ import dev.arkbuilders.components.filepicker.onArkPathPicked
 import dev.arkbuilders.components.scorewidget.HorizontalScoreWidgetComposable
 import dev.arkbuilders.components.scorewidget.ScoreWidgetController
 import dev.arkbuilders.components.scorewidget.VerticalScoreWidgetComposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import kotlin.io.path.name
 
@@ -105,11 +107,11 @@ class ScoreActivity : AppCompatActivity() {
 
     private suspend fun setupIndexAndScoreStorage(
         root: Path
-    ): Pair<ResourceIndex, ScoreStorage> {
+    ): Pair<ResourceIndex, ScoreStorage> = withContext(Dispatchers.IO) {
         val foldersRepo = FoldersRepo(applicationContext)
         val index = ResourceIndexRepo(foldersRepo).provide(root)
         val scoreStorage = ScoreStorageRepo(lifecycleScope).provide(index)
-        return index to scoreStorage
+        return@withContext index to scoreStorage
     }
 
     companion object {
