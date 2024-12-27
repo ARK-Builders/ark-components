@@ -22,7 +22,7 @@ class ScoreWidgetController(
     val scope: CoroutineScope,
     val getCurrentId: () -> ResourceId,
     val onScoreChanged: (ResourceId) -> Unit
-): ContainerHost<ScoreWidgetState, Unit> {
+) : ContainerHost<ScoreWidgetState, Unit> {
 
     private lateinit var scoreStorage: ScoreStorage
 
@@ -33,25 +33,31 @@ class ScoreWidgetController(
         this.scoreStorage = scoreStorage
     }
 
-    fun setVisible(visible: Boolean) = intent {
-        reduce {
-            state.copy(visible = visible)
+    fun setVisible(visible: Boolean) {
+        intent {
+            reduce {
+                state.copy(visible = visible)
+            }
         }
     }
 
-    fun displayScore() = intent {
-        reduce {
-            state.copy(score = scoreStorage.getScore(getCurrentId()))
+
+    fun displayScore() {
+        intent {
+            reduce {
+                state.copy(score = scoreStorage.getScore(getCurrentId()))
+            }
         }
     }
 
-    fun onIncrease() = changeScore(1)
+    fun onIncrease() = changeScore(scoreStorage.getScore(getCurrentId()) + 1)
 
-    fun onDecrease() = changeScore(-1)
+    fun onDecrease() = changeScore(scoreStorage.getScore(getCurrentId()) - 1)
 
-    private fun changeScore(inc: Score) = scope.launch {
+    fun onReset() = changeScore(0)
+
+    private fun changeScore(score: Score) = scope.launch {
         val id = getCurrentId()
-        val score = scoreStorage.getScore(id) + inc
 
         scoreStorage.setScore(id, score)
         withContext(Dispatchers.IO) {

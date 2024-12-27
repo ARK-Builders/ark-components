@@ -13,6 +13,7 @@ androidXTestJunit = "1.1.5"
 androidXTestEspresso = "3.5.1"
 skydovesBalloon = "1.6.4"
 flexbox = "3.0.0"
+counterSlider = "0.1.4"
 
 composeActivity = "1.9.0"
 composeBom = "2024.06.00"
@@ -29,6 +30,7 @@ fastadapter-extensions-binding = { group = "com.mikepenz", name = "fastadapter-e
 fastadapter-extensions-diff = { group = "com.mikepenz", name = "fastadapter-extensions-diff", version.ref = "fastadapter" }
 arklib = { group = "dev.arkbuilders", name = "arklib", version.ref = "arkLib" }
 orbit-mvi-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbitMvi" }
+orbit-mvi-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbitMvi" }
 viewbinding-property-delegate = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-noreflection", version.ref = "viewbindingPropertyDelegate" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidXCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidXAppcompat" }
@@ -38,6 +40,7 @@ androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref
 androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidXTestEspresso" }
 skydoves-balloon = { group = "com.github.skydoves", name = "balloon", version.ref = "skydovesBalloon" }
 flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
+counterslider = { module = "com.github.mdrlzy:ComposeCounterSlider", version.ref = "counterSlider" }
 
 #Compose
 androidx-compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
@@ -47,3 +50,4 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }

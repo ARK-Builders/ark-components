@@ -59,6 +59,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AboutActivity::class.java)
             startActivity(intent)
         }
+
+        findViewById<MaterialButton>(R.id.btn_score).setOnClickListener {
+            resolvePermissions()
+            val intent = Intent(this, ScoreActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun getFilePickerConfig(mode: ArkFilePickerMode? = null) = ArkFilePickerConfig(
