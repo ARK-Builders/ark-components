@@ -6,7 +6,7 @@ import androidx.annotation.StyleRes
 import dev.arkbuilders.components.filepicker.R
 import java.nio.file.Path
 
-class ArkFilePickerConfig(
+data class ArkFilePickerConfig(
     @StringRes
     val titleStringId: Int = R.string.ark_file_picker_pick_title,
     @StringRes

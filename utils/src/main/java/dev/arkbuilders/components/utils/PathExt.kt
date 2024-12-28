@@ -8,3 +8,5 @@ fun Path.hasNestedOrParentalRoot(roots: Iterable<Path>): Boolean {
     }
     return hasNestedRoot
 }
+
+fun Path.hasNestedRoot(roots: Iterable<Path>) = roots.any {  it.startsWith(this) }

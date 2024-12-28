@@ -14,7 +14,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import dev.arkbuilders.arklib.data.folders.FoldersRepo
 import dev.arkbuilders.arklib.utils.DeviceStorageUtils
 import dev.arkbuilders.arklib.utils.listChildren
-import dev.arkbuilders.components.utils.hasNestedOrParentalRoot
+import dev.arkbuilders.components.utils.hasNestedRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
@@ -182,7 +182,7 @@ internal class ArkFilePickerViewModel(
         return arkGlobal?.exists() == true
     }
 
-    fun pinFile(file: Path) = intent {
+    fun pinFolder(file: Path) = intent {
         if (!file.isDirectory()) {
             postSideEffect(FilePickerSideEffect.CannotPinFile)
             return@intent
@@ -193,7 +193,7 @@ internal class ArkFilePickerViewModel(
         val root = roots.find { root -> file.startsWith(root) }
         val favorites = rootsWithFavorites[root]?.flatten()
 
-        val hasNestedRoot = file.hasNestedOrParentalRoot(roots)
+        val hasNestedRoot = file.hasNestedRoot(roots)
 
         if (hasNestedRoot) {
             postSideEffect(FilePickerSideEffect.NestedRootProhibited)
@@ -203,7 +203,6 @@ internal class ArkFilePickerViewModel(
         val haveRoot = haveRoot()
 
         root?.let {
-
             //Make sure file isn't inside a root folder
             if (root != file) {
                 val foundAsFavorite = favorites?.any { file.endsWith(it) } ?: false
